@@ -1,0 +1,27 @@
+2025-02-27 04:57:25,980 - root - INFO - Loading operators from configuration file: data/operator/operator_100.jsonl
+2025-02-27 04:57:32,218 - root - WARNING - Failed to parse operator from line 104: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_Yl4JT0T9eW.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:32,371 - root - WARNING - Failed to parse operator from line 105: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_MXf1OUP5ii.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:33,558 - root - WARNING - Failed to parse operator from line 106: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_dXloO0Kira.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:33,687 - root - WARNING - Failed to parse operator from line 107: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_4gIeDH8XbW.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:34,132 - root - WARNING - Failed to parse operator from line 108: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_ZJwk9SKawi.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:35,550 - root - WARNING - Failed to parse operator from line 109: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_QLSuuZT3eZ.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:36,206 - root - WARNING - Failed to parse operator from line 110: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_ilQi3mCzPa.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:36,312 - root - WARNING - Failed to parse operator from line 111: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_bOONrRIZM9.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:36,436 - root - WARNING - Failed to parse operator from line 112: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_KHmYSDo95h.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:37,070 - root - WARNING - Failed to parse operator from line 113: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_K3QD8kBpfL.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:39,666 - root - WARNING - Failed to parse operator from line 115: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_gNCSSZt20n.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 04:57:39,667 - root - INFO - Successfully loaded 104 operators from the configuration file.
+2025-02-27 05:00:09,474 - root - INFO - Loading operators from configuration file: /map-vepfs/kaijing/exp_mechanicalinterpretability/Opulse/opulse/data/operator_100_test/final_base.jsonl
+2025-02-27 05:00:09,784 - root - INFO - Successfully loaded 115 operators from the configuration file.
+2025-02-27 05:00:28,380 - root - INFO - Loading operators from configuration file: data/operator/operator_100.jsonl
+2025-02-27 05:00:40,441 - root - WARNING - Failed to parse operator from line 111: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_bOONrRIZM9.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 05:00:41,081 - root - WARNING - Failed to parse operator from line 112: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_KHmYSDo95h.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 05:00:41,096 - root - WARNING - Failed to parse operator from line 113: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_K3QD8kBpfL.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 05:00:42,311 - root - WARNING - Failed to parse operator from line 115: /map-vepfs/kaijing/op_plus/opulse/operator_funcs_so/module_gNCSSZt20n.cpython-310-x86_64-linux-gnu.so: cannot open shared object file: No such file or directory
+2025-02-27 05:00:42,311 - root - INFO - Successfully loaded 111 operators from the configuration file.
+2025-02-27 05:01:10,830 - root - INFO - Loading operators from configuration file: data/operator/operator_100.jsonl
+2025-02-27 05:01:18,398 - root - INFO - Successfully loaded 115 operators from the configuration file.
+2025-02-27 05:03:29,292 - root - INFO - Loading operators from configuration file: data/operator/operator_100.jsonl
+2025-02-27 05:03:29,602 - root - INFO - Successfully loaded 115 operators from the configuration file.
+2025-02-27 05:04:40,501 - root - INFO - Loading operators from configuration file: data/operator/operator_100.jsonl
+2025-02-27 05:04:40,794 - root - INFO - Successfully loaded 115 operators from the configuration file.

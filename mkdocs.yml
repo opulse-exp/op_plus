@@ -1,0 +1,35 @@
+# Project information
+site_name: 'Opulse'
+site_description: 'Custom Operator Generation System'
+
+
+# Repository
+repo_name: 'Opulse'
+repo_url: 'https://github.com/expmechanicalinterpretability/Opulse.git'
+
+# Copyright
+copyright: 'Opulse Team'
+
+# Configuration
+theme:
+  name: 'material'
+  # features:
+  #   - navigation.tabs
+  palette:
+    scheme: default
+    primary: 'black'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  logo: 'assets/images/logo.png'
+
+plugins:
+  - search
+  - mkdocstrings
+
+
+
+
+
+

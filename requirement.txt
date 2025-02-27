@@ -1,0 +1,11 @@
+mkdocs
+mkdocs-material
+mkdocstrings[python]
+lark
+hypothesis
+pyvis
+z3
+cython
+orjson
+tqdm
+nanoid

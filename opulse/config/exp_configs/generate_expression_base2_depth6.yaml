@@ -1,0 +1,35 @@
+custom_digits: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+expr_atom_type_weights:
+  number: 0.7
+  variable: 0.3
+expr_max_depth: 6
+expr_numeric_range:
+  max_value: 1000
+  min_value: 0
+expr_type_weights:
+  atoms: 0
+  binary: 0.7
+  unary_postfix: 0.1
+  unary_prefix: 0.2
+expr_variables: a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
+logging:
+  level: INFO
+  log_dir: logs
+  log_file: data.log
+longer_result_compute:
+  base: 2
+  flag: true
+max_base: 16
+other_symbols_atoms:
+  equals_sign: '='
+  inf_symbol: Inf
+  left_parenthesis: (
+  nan_symbol: NaN
+  neg_inf_symbol: -Inf
+  right_parenthesis: )
+random_base:
+  base: 2
+  flag: false
+result_base:
+  base: 2
+  random_flag: false
