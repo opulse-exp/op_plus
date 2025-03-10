@@ -78,7 +78,7 @@ nohup bash run_generate_operator_multiprocess.sh > output.log 2>&1 &
 
 Assign priority and associativity after the operator data generation completes.
 
-#### How to Run  
+### How to Use  
 
 To run the script, execute the following command with the desired parameters:
 
@@ -101,7 +101,7 @@ Command-Line Arguments:
 
 Generate unary operators representing various bases.
 
-### How to Run  
+### How to Use  
 
 To run the script, execute the following command with the desired parameters: 
 

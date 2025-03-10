@@ -37,10 +37,10 @@ nav:
       - "Operatorplus":
         - "OperatorInfo": operatorplus/operator_info.md
         - "ConditionGenerator": operatorplus/condition_generator.md
-        - "OperatorGenerator.md": operatorplus/operator_generator.md
-        - "OperatorManager.md": operatorplus/operator_manager.md
-        - "OperatorDefinitionParser.md": operatorplus/operator_definition_parser.md
-        - "OperatorTransformer.md": operatorplus/operator_transformer.md
+        - "OperatorGenerator": operatorplus/operator_generator.md
+        - "OperatorManager": operatorplus/operator_manager.md
+        - "OperatorDefinitionParser": operatorplus/operator_definition_parser.md
+        - "OperatorTransformer": operatorplus/operator_transformer.md
         - "CythonCompiler": operatorplus/compiler.md
         - "OperatorPriorityManager": operatorplus/operator_priority_manager.md
         - "OperatorDependencyGraph": operatorplus/operator_dependency_graph.md
@@ -55,7 +55,7 @@ nav:
       - "Expression Generate": generate_expression.md
 
 extra:
-  logo_icon: fontawesome/brands/github-alt  # 例如，使用 FontAwesome 图标
+  logo_icon: fontawesome/brands/github-alt  
 
 
 
