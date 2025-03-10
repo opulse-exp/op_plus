@@ -46,7 +46,7 @@ class NumberNode(ExpressionNode):
         Converts the node's value to a string without base symbols.
 
         Args:
-           op_mode (bool): A boolean indicating if operator mode is enabled (default False).
+           surround_symbol: The symbol surrounding the value.
 
         Returns:
             (str): A string representation of the value.
@@ -70,7 +70,6 @@ class NumberNode(ExpressionNode):
         Raises:
             ValueError: If base_converter is None.
         """
-        # 使用operator_manager获得特定相关base的一元运算符
         return ExpressionBaseConverter.convert_int_to_targetbase(
             input=self.value,
             output_base=self.base,

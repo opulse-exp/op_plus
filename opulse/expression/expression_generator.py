@@ -43,21 +43,20 @@ class ExpressionGenerator:
         """
         self.param_config = param_config
         self.logger = logger.get_logger()
-        # 有关表达式生成的配置
+
         self.variables = self.param_config.get("expr_variables")
         self.max_value = self.param_config.get("expr_numeric_range")["max_value"]
         self.min_value = self.param_config.get("expr_numeric_range")["min_value"]
-        # 表达式树的最大深度 防止递归超过最大深度。
+
         self.max_depth = self.param_config.get("expr_max_depth")
-        # 设置表达式类型的概率分布。
+
         self.expr_type_weights = self.param_config.get("expr_type_weights")
-        # 原子节点的分布。当是变量和数字的组合时，才需要考虑两者之间的权重分布
+
         self.atoms_type_weights = self.param_config.get("expr_atom_type_weights")
 
         self.cur_expr_id = 0
         self.operator_manager = operator_manager
 
-        # 获取一元和二元运算符
         unary_prefix_ops, unary_postfix_ops, self.binary_ops = (
             operator_manager.get_unary_and_binary_operators()
         )
@@ -68,10 +67,11 @@ class ExpressionGenerator:
         self.unary_prefix_ops = [
             opinfo for opinfo in unary_prefix_ops if opinfo.is_base is None
         ]
-        # operator到expression id的映射
+
+
         self.operators2expr: Dict[int, list[int]] = defaultdict(list)
 
-        # 有关base的配置
+
         self.base_converter = BaseConverter(
             self.param_config.get("max_base"), self.param_config.get("custom_digits")
         )
@@ -158,15 +158,15 @@ class ExpressionGenerator:
         """
         atoms_node = None
         if atom_choice == "variable":
-            # 只生成变量
+            
             atoms_node = VariableNode(random.choice(self.variables))
         elif atom_choice == "number":
-            # 只生成数字
+            
             atoms_node = NumberNode(
                 self.generate_random_value(), self.generate_random_base()
             )
         elif atom_choice == "variable_and_number":
-            # 生成变量和数字的组合
+            
             atoms_type = random.choices(
                 ["variable", "number"],
                 weights=[
@@ -232,9 +232,6 @@ class ExpressionGenerator:
                     expr_node.right_expr.position = "right"
                     return expr_node
 
-                
-
-
         expr_type = random.choices(
             ["binary", "unary_prefix", "unary_postfix", "atoms"],
             weights=[
@@ -246,9 +243,9 @@ class ExpressionGenerator:
         )[0]
 
         if expr_type == "binary":
-            # 检查 binary_ops 是否为空
+            
             if not self.binary_ops:
-                # 如果为空，则重新随机选择其他类别
+                
                 return self.generate_expression(cur_depth, max_depth, atom_choice)
             binary_op_weights = [opinfo.weight for opinfo in self.binary_ops]
             if is_op_weight:
@@ -265,8 +262,12 @@ class ExpressionGenerator:
 
             # select_op = random.choice(self.binary_ops)
             expr_node = BinaryExpressionNode(select_op)
-            # 这里需要记录位置的原因在于：转换成表达式字符串的时候需要考虑括号的添加，尤其考虑结合性
-            # 如：表达式树：1+（2+3），在输出2+3后，递归的上层需要考虑是否添加括号
+
+            # The reason for recording the position here is that when converting to an expression string, 
+            # parentheses need to be added appropriately, especially considering associativity.
+            # For example, in the expression tree: 1 + (2 + 3), after outputting 2 + 3, 
+            # the recursive upper level needs to determine whether to add parentheses.
+
             expr_node.left_expr = self.generate_expression(
                 cur_depth + 1, max_depth, atom_choice
             )
@@ -277,9 +278,7 @@ class ExpressionGenerator:
             expr_node.right_expr.position = "right"
             return expr_node
         elif expr_type == "unary_prefix":
-            # 检查 unary_prefix_ops 是否为空
             if not self.unary_prefix_ops:
-                # 如果为空，则重新随机选择其他类别
                 return self.generate_expression(cur_depth, max_depth, atom_choice)
             unary_prefix_ops_weights = [
                 opinfo.weight for opinfo in self.unary_prefix_ops
@@ -306,9 +305,7 @@ class ExpressionGenerator:
             expr_node.unary_expr.position = "unary"
             return expr_node
         elif expr_type == "unary_postfix":
-            # 检查 unary_postfix_ops 是否为空
             if not self.unary_postfix_ops:
-                # 如果为空，则重新随机选择其他类别
                 return self.generate_expression(cur_depth, max_depth, atom_choice)
             unary_postfix_ops_weights = [
                 opinfo.weight for opinfo in self.unary_postfix_ops
@@ -337,65 +334,7 @@ class ExpressionGenerator:
 
 
     def create_single_operator_expression(self, func_id:str):
-        # exprs = []
-        
-        # # 生成 num 条二元操作符表达式
-        # for opinfo in self.binary_ops:
-        #     for _ in range(num):  # 对每个二元操作符生成 num 条表达式
-        #         expr_node = BinaryExpressionNode(opinfo)
-        #         expr_node.left_expr = NumberNode(
-        #             self.generate_random_value(), self.generate_random_base()
-        #         )
-        #         expr_node.left_expr.position = "left"
-        #         expr_node.right_expr = NumberNode(
-        #             self.generate_random_value(), self.generate_random_base()
-        #         )
-        #         expr_node.right_expr.position = "right"
-        #         exprs.append(expr_node)
-
-        # # 生成 num 条单目操作符表达式
-        # unary_ops = self.unary_postfix_ops + self.unary_prefix_ops
-        # for opinfo in unary_ops:
-        #     for _ in range(num):  # 对每个后缀单目操作符生成 num 条表达式
-        #         expr_node = UnaryExpressionNode(opinfo)
-        #         expr_node.unary_expr = NumberNode(
-        #             self.generate_random_value(), self.generate_random_base()
-        #         )
-        #         expr_node.unary_expr.position = "unary"
-        #         exprs.append(expr_node)
-
-        # properties_list = []
-        # for expression_tree in exprs:
-        #     # 初始化所有evaluate配置
-        #     expr_result_base = None
-        #     longer_result_info = None
-        #     if self.result_base_random_flag:
-        #         expr_result_base = random.randint(2, self.max_base)
-        #     else:
-        #         expr_result_base = self.result_base
-        #     if self.longer_result_compute_flag:
-        #         longer_result_info = LongerResultInfo(
-        #             target_base=self.longer_result_compute_base, flag=False,
-        #         )
-
-        #     self.expr_evaluator.init_expr(
-        #         expression_tree=expression_tree,
-        #         id=self.cur_expr_id,
-        #         op_mode=False,
-        #         expr_result_base=expr_result_base,
-        #         longer_result_info=longer_result_info,
-        #     )
-        #     # self.logger.debug(f"Evaluating expression {self.cur_expr_id}")
-        #     properties = self.expr_evaluator.evaluate()
-        #     # print(properties["used_operators"])
-        #     for op_id in properties["used_operators"]:
-        #         self.operators2expr[op_id].append(self.cur_expr_id)
-
-        #     self.cur_expr_id += 1
-        #     properties_list.append(properties)
-
         opinfo=self.operator_manager.get_operator_by_func_id(func_id)
-
         if opinfo.n_ary==1:
             expr_node = UnaryExpressionNode(opinfo)
             expr_node.unary_expr = NumberNode(
@@ -463,7 +402,6 @@ class ExpressionGenerator:
                 self.operator_manager.get_operator_by_func_id(fix_func_id)
             )
 
-        # 初始化所有evaluate配置
         expr_result_base = None
         longer_result_info = None
         if self.result_base_random_flag:
@@ -546,7 +484,6 @@ class ExpressionGenerator:
         ]
         n_order_unary_ops = n_order_unary_prefix_ops + n_order_unary_postfix_ops
 
-        # 随机从n_order_ops中选择一个运算符
         select_n_order_op = random.choice(n_order_binary_ops + n_order_unary_ops)
         while True:
             expression_trees = []
@@ -665,7 +602,7 @@ class ExpressionGenerator:
 #     for depth in test_depth:
 #         generator.set_max_depth(depth)
 #         for num in all_scale:
-#             start_time = time.time()  # 记录开始时间
+#             start_time = time.time()  
 #             with open("data/expression/expression_test.jsonl", "w") as f:
 #                 for i in range(num):
 #                     properties = generator.create_expression("number")
@@ -682,7 +619,6 @@ class ExpressionGenerator:
 
 
 # if __name__ == "__main__":
-#     # 初始化 ConditionGenerator 时使用单变量 'a'
 #     variables = ["a"]
 #     operator_manager = OperatorManager(
 #         config_file="data/operator/initial_operators.jsonl"
@@ -692,13 +628,11 @@ class ExpressionGenerator:
 #         variables=variables, operator_manager=operator_manager
 #     )
 
-#     # 生成条件表达式
 #     for _ in range(10):
 #         expr = expr_generator.create_expression_str(atom_choice="variable_and_number")
 #         print(f"生成的表达式（仅 'a' 变量）: {expr}")
 #         print("-" * 50)
 
-#     # 更新变量列表为 'a' 和 'b'
 #     expr_generator.set_variables(["a", "b"])
 #     for _ in range(10):
 #         expr = expr_generator.create_expression_str(atom_choice="variable_and_number")

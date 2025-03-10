@@ -1,1 +1,0 @@
-:::opulse.operatorplus.Z3_operator_property_validator

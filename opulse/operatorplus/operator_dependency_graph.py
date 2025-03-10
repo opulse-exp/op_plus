@@ -37,15 +37,15 @@ class OperatorDependencyGraph:
         self.logger.debug("Building the dependency graph.")
         
         # Construct the graph
-        for operator_id, operator_info in self.operator_manager.operators.items():
+        for operator_func_id, operator_info in self.operator_manager.operators.items():
             if operator_info.dependencies:
                 for dep_id in operator_info.dependencies:
-                    graph[dep_id].append(operator_id)
-                    in_degree[operator_id] += 1
-                    self.logger.debug(f"Operator {operator_id} depends on {dep_id}.")
+                    graph[dep_id].append(operator_func_id)
+                    in_degree[operator_func_id] += 1
+                    self.logger.debug(f"Operator {operator_func_id} depends on {dep_id}.")
             else:
                 in_degree[operator_id] = 0  # If no dependencies, set in-degree to 0
-                self.logger.debug(f"Operator {operator_id} has no dependencies.")
+                self.logger.debug(f"Operator {operator_func_id} has no dependencies.")
         
         # Perform topological sorting
         topo_sorted = self.topological_sort(graph, in_degree)
@@ -138,13 +138,13 @@ class OperatorDependencyGraph:
         net = Network(directed=True)
 
         # Add nodes and edges to the graph
-        for operator_id, operator_info in self.operator_manager.operators.items():
-            label = f"{operator_id}:{operator_info.symbol}"  # Combine operator ID and symbol
-            net.add_node(operator_id, label=label)
+        for operator_func_id, operator_info in self.operator_manager.operators.items():
+            label = f"{operator_func_id}:{operator_info.symbol}"  # Combine operator ID and symbol
+            net.add_node(operator_func_id, label=label)
             if operator_info.dependencies:
                 for dep_id in operator_info.dependencies:
-                    net.add_edge(dep_id, operator_id)
-                    self.logger.debug(f"Edge added between {dep_id} and {operator_id}.")
+                    net.add_edge(dep_id, operator_func_id)
+                    self.logger.debug(f"Edge added between {dep_id} and {operator_func_id}.")
         
         net.force_atlas_2based()  # Enable the ForceAtlas2 layout engine, but disable continuous updates
         net.physics = False  # Disable physics engine for static layout

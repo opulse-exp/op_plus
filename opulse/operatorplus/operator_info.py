@@ -1,35 +1,7 @@
 import json
 from typing import List, Dict, Optional, Any
 from config.constants import thres
-import tempfile
-import os
-import cython
 import ctypes
-# class OperatorInfo:
-#     def __init__(
-#         self,
-#         id: int,
-#         symbol: str,
-#         n_ary: int,  # 1 表示一元运算符，2 表示二元运算符
-#         unary_position: Optional[str],  # 'prefix'（前缀）、'postfix'（后缀）或 None
-#         is_base: Optional[int],  # 用于标识基本类型，例如 2 表示二进制，10 表示十进制，16 表示十六进制
-#         definition: Optional[str],
-#         definition_type: Optional[str],  # 类型：简单定义、递归定义、分支定义
-#         priority: int,  # 同一级别操作的优先级，值越高表示优先级越高
-#         associativity_direction: Optional[str],  # 'left'（左结合）、'right'（右结合）或 None
-#         n_order: int,  # 阶数，用于衡量复杂性，特别是对于递归定义
-#         op_compute_func: Opt                               ional[
-#             str
-#         ],  # 运算符的函数代码，例如 "def op_11(a, b):..."
-#         op_count_func: Optional[str],  # 用于计算计数的函数代码，例如 base = 0
-#         z3_compute_func: Optional[str] = None,  # 待实现，用于约束求解
-#         properties: Optional[Dict[str, bool]] = None,  # 其他属性，如                                              "交换性"、"结合性"、"幂等性" 等
-#         dependencies: Optional[List[int]] = None,  # 记录对其他运算符的依赖关系
-#         is_temporary: bool = False,  # 运算符是否为临时的（用于信息不完整的情况）
-#         recursive_used_cases: int = 0b00000000,  # 记录使用的递归情况
-#         is_recursion_enabled: bool = True  # 根据递归类型是否仍可启用递归
-#     ):
-
 
 class OperatorInfo:
     def __init__(
@@ -62,7 +34,7 @@ class OperatorInfo:
         properties: Optional[
             Dict[str, bool]
         ] = None,  # Other properties such as "commutative", "associative", "idempotent", etc.
-        weight: Optional[float] = 1,  # 被选中的概率
+        weight: Optional[float] = 1,  # Probability of being selected
         dependencies: Optional[
             List[int]
         ] = None,  # Record dependencies on other operators
@@ -74,24 +46,28 @@ class OperatorInfo:
         """
         Initializes the OperatorInfo object with various parameters describing the operator's properties.
 
-        Args:
+        Parameters:
             id (int): Unique identifier for the operator.
+            func_id (str): Function identifier for the operator.
             symbol (str): Symbol representing the operator.
             n_ary (int): Arity of the operator, either 1 for unary or 2 for binary.
             unary_position (Optional[str]): Position for unary operators ('prefix', 'postfix', or None).
-            is_base (Optional[int]): Base type identifier (e.g., 2 for binary, 10 for decimal).
+            n_order (int): Order to measure complexity, especially for recursive operators.
+            is_base (Optional[int]): Base type identifier (e.g., 2 for binary, 10 for decimal, 16 for hexadecimal).
             definition (Optional[str]): Definition of the operator (could be a string representation of the definition).
             definition_type (Optional[str]): Type of definition ('simple_definition', 'recursive_definition', or 'branch_definition').
             priority (int): Priority of the operator, higher means higher priority.
             associativity_direction (Optional[str]): Direction of associativity ('left', 'right', or None).
-            n_order (int): Order to measure complexity, especially for recursive operators.
             op_compute_func (Optional[str]): Code string for computing the operator's result.
             op_count_func (Optional[str]): Code string for counting the operations.
-            properties (Optional[Dict[str, bool]]): Additional properties of the operator (commutative, associative, etc.).
+            z3_compute_func (Optional[str]): Function code for constraint solving (still under development).
+            properties (Optional[Dict[str, bool]]): Additional properties of the operator (e.g., commutative, associative, etc.).
+            weight (Optional[float]): Probability of the operator being selected.
             dependencies (Optional[List[int]]): List of dependencies on other operators.
             is_temporary (bool): Whether the operator is temporary, typically used when its information is incomplete.
             recursive_used_cases (int): Record of the recursive cases used.
             is_recursion_enabled (bool): Whether recursion is still allowed for this operator.
+            module (Optional[ctypes.CDLL]): Compiled module containing the operator's functions.
         """
         self.id = id
         self.func_id = func_id
@@ -116,7 +92,7 @@ class OperatorInfo:
         self.is_recursion_enabled = is_recursion_enabled
         self.module = module
         
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Provides a string representation of the operator information object.
 
@@ -195,6 +171,12 @@ class OperatorInfo:
     def get_compute_function(
         self
     ) -> Optional[Any]:
+        """
+        Retrieves the compute function for the operator from the compiled module.
+
+        Returns:
+            Optional[Any]: The compute function object or None if the module or function is unavailable.
+        """
         if self.module != None:
             func = getattr(self.module, f"op_{self.func_id}", None)
             return func
@@ -203,97 +185,16 @@ class OperatorInfo:
     def get_count_function(
         self
     ) -> Optional[Any]:
+        """
+        Retrieves the count function for the operator from the compiled module.
+
+        Returns:
+            Optional[Any]: The count function object or None if the module or function is unavailable.
+        """
         if self.module != None:
             func = getattr(self.module, f"op_{self.func_id}", None)
             return func
         return None
     
-    # def get_compute_function(
-    #     self, available_funcs: Dict[str, Any] = None
-    # ) -> Optional[Any]:
-    #     """
-    #     Retrieves the compute function for the operator, compiling it if necessary, and handling dependencies.
-
-    #     Args:
-    #         available_funcs (Dict[str, Any], optional): A dictionary of available functions that can be used by the operator's function.
-
-    #     Returns:
-    #         Optional[Any]: The compiled function object or None if it cannot be compiled.
-    #     """
-    #     available_funcs = available_funcs or {}
-    #     return self._compile_function(
-    #         self.op_compute_func, f"op_{self.id}", available_funcs
-    #     )
-
-    # def get_count_function(
-    #     self, available_funcs: Dict[str, Any] = None
-    # ) -> Optional[Any]:
-    #     """
-    #     Retrieves the count function for the operator, compiling it if necessary, and handling dependencies.
-
-    #     Args:
-    #         available_funcs (Dict[str, Any], optional): A dictionary of available functions that can be used by the operator's function.
-
-    #     Returns:
-    #         Optional[Any]: The compiled function object or None if it cannot be compiled.
-    #     """
-    #     available_funcs = available_funcs or {}
-    #     return self._compile_function(
-    #         self.op_count_func, f"op_count_{self.id}", available_funcs
-    #     )
-     
-    # def _compile_function(
-    #     self, func_code: Optional[str], func_name: str, available_funcs: Dict[str, Any]
-    # ) -> Optional[Any]:
-    #     """
-    #     Compiles a given function code string into an executable function object, caching it for future use.
-
-    #     Args:
-    #         func_code (Optional[str]): The code for the function to be compiled.
-    #         func_name (str): The name of the function being compiled.
-    #         available_funcs (Dict[str, Any]): A dictionary of functions available in the current context.
-
-    #     Returns:
-    #         Optional[Any]: The compiled function object, or None if compilation fails.
-    #     """
-    #     if not func_code:
-    #         return None
-    #     if func_name in self.compiled_functions:
-    #         return self.compiled_functions[func_name]
-
-    #     try:
-    #         # Create a local namespace and add available functions
-    #         local_namespace = {}
-    #         # 将 numba 添加到 local_namespace
-    #         # local_namespace["numba"] = numba
-    #         local_namespace.update(available_funcs)
-    #         print(thres)
-    #         # Add thres and special_values to the local namespace
-    #         local_namespace["thres"] = thres
-    #         # local_namespace['special_values'] = special_values
-
-            
-            
-    #         # # Execute the function code in the local namespace to compile the function
-    #         # exec(func_code, local_namespace, local_namespace)
-    #         local_namespace = cython.inline(func_code, local_namespace=local_namespace)
-    #         compiled_func = local_namespace.get(func_name, None)
-            
-    #         #不需要这个编译，直接这个编译好像会导致传入的参数有问题
-    #         # Apply njit decorator with cache=True for JIT compilation and caching
-    #         # compiled_func = numba.njit(func_code, cache=True)
-    #         if compiled_func:
-    #             self.compiled_functions[func_name] = compiled_func
-    #             return compiled_func
-    #         # # Cache the compiled function
-    #         # self.compiled_functions[func_name] = compiled_func
-    #         # return compiled_func
-    #         else:
-    #             return None
-    #     except Exception as e:
-    #         print(
-    #             f"Error compiling function '{func_name}' for operator '{self.symbol}': {e}"
-    #         )
-    #         return None
 
 

@@ -159,14 +159,22 @@ class ConditionGenerator:
         if num_conditions == 1:
             condition_expr = conditions[0]
         else:
-            connector = random.choice(self.logical_connectors)
-            self.logger.debug(f"Chosen logical connector: {connector}")
-            condition_expr = f" {connector} ".join(conditions)
-            if random.choice([True, False]):
-                condition_expr = f"({condition_expr})"
-        self.logger.debug(f"Generated final conditional expression : {condition_expr}")
-        self.logger.info(f"Generated final conditional expression : {condition_expr}")
-        return condition_expr
+            # Combine conditions with randomly chosen logical operators
+            expr_parts = [conditions[0]]
+            for i in range(1, num_conditions):
+                connector = random.choice(self.logical_connectors)  # Pick a different connector for each pair
+                expr_parts.append(connector)
+                expr_parts.append(conditions[i])
+
+                # Randomly decide whether to wrap the last two conditions with parentheses
+                if random.choice([True, False]):
+                    expr_parts[-3:] = [f"({expr_parts[-3]} {expr_parts[-2]} {expr_parts[-1]})"]
+
+            condition_expr = " ".join(expr_parts)
+
+            self.logger.debug(f"Generated final conditional expression: {condition_expr}")
+            self.logger.info(f"Generated final conditional expression: {condition_expr}")
+            return condition_expr
 
 
 

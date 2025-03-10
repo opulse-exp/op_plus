@@ -13,7 +13,6 @@ from typing import cast
 from operatorplus.operator_info import OperatorInfo
 from expression.base_converter import BaseConverter
 from config import ParamConfig, LogConfig
-# from operatorplus import op_func
 from dataclasses import dataclass, asdict
 import os
 from operatorplus.compiler import CythonCompiler
@@ -386,21 +385,14 @@ class ExpressionEvaluator:
             return self.atoms["-Inf"]
         else:
             return expr_result
-    # def get_compute_count_func(self, func_id:str):
-    #     compiler = self.operator_manager.compiler
-    #     op_module = compiler.import_module(f"module_{func_id}")
-
-    #     compute_func = getattr(op_module, f"op_{func_id}", None)
-    #     count_func = getattr(op_module, f"op_count_{func_id}", None)
-    #     return compute_func, count_func
 
     def get_compute_count_func(self, operator:OperatorInfo):
         if operator.module == None:
-            for depend_id in operator.dependencies:
-                so_file = f"module_{depend_id}.cpython-310-x86_64-linux-gnu.so"
-                full_path = os.path.join(self.cython_cache_dir, so_file)
-                if os.path.exists(full_path):
-                    self.operator_manager.compiler.import_module_from_path(f"module_{operator.func_id}")
+            # for depend_id in operator.dependencies:
+            #     so_file = f"module_{depend_id}.cpython-310-x86_64-linux-gnu.so"
+            #     full_path = os.path.join(self.cython_cache_dir, so_file)
+            #     if os.path.exists(full_path):
+            #         self.operator_manager.compiler.import_module_from_path(f"module_{operator.func_id}")
             so_file = f"module_{operator.func_id}.cpython-310-x86_64-linux-gnu.so"
             full_path = os.path.join(self.cython_cache_dir, so_file)
             if os.path.exists(full_path):
@@ -630,8 +622,8 @@ class ExpressionEvaluator:
         Returns:
             (int): The operation count as an integer.
         """
-        # 实现运算次数的计算逻辑
         return self.operation_count
+    
     def all_dependent_operators(self)->List:
         used_ops_func_id = list(self.all_operators.keys())
         dependent_ops = []
@@ -711,7 +703,6 @@ class ExpressionEvaluator:
 
 
 # if __name__ == "__main__":
-#     # 示例使用
 #     from expression.expression_generator import ExpressionGenerator
 #     from operatorplus.operator_manager import OperatorManager
 

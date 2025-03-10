@@ -44,5 +44,3 @@ if __name__ == "__main__":
     with open(args.output_operator_file, "a", encoding="utf-8") as f: 
         batch_write_to_file(results, f)
 
-    # # Save the operators to the specified output file
-    # op_manager.save_operators_to_jsonl(args.output_operator_file)

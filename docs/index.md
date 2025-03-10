@@ -1,5 +1,3 @@
-# ReadMe
-
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a> 
 <!--
@@ -152,10 +150,23 @@ The overall project is divided into two parts: symbol generation (under the oper
 
 ### Installation
 
+1. Clone the repository and set up your environment:
 ```bash
-git clone https://github.com/opulse-exp/Opulse.git
-cd ./Opulse
+git clone https://github.com/opulse-exp/op_plus.git
+conda create --name op_plus python=3.10
+cd op_plus
 pip install -r requirement.txt
+```
+
+2. Download the required data from Hugging Face: 
+```bash
+https://huggingface.co/datasets/mkj69/op_plus
+```
+
+3. Extract the downloaded data. This directory contains the pre-compiled .so files for 100,000 operator calculation functions and counting functions, compiled using Cython. Since the files are compiled with Python 3.10, you will need to use a Python 3.10 environment to work with these modules. If you wish to use a different Python version, you can recompile the .so files during runtime.
+```bash
+cd opulse
+tar -xzvf operator_funcs_so.tar.gz
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -166,25 +177,18 @@ pip install -r requirement.txt
 ## Usage
 
 ### generate operator
-```bash
-python generate_operator.py \
-  --config "$CONFIG_PATH" \
-  --initial-operators-path "$INITIAL_OPERATORS_PATH" \
-  --generated-operators-path "$GENERATED_OPERATORS_PATH" \
-  --num "$NUM_OPERATORS"
-```
+
+For detailed usage and configurations, refer to the following documents:
+
+- [Generate Operator Config](config/generate_operator.md)
+- [Generate Operator Progess](generate_operator.md)
 
 ### generate expression
 
-```bash
-python generate_expression.py \
-    --config "$CONFIG_PATH" \
-    --operators-path "$OPERATORS_PATH" \
-    --generated-expression-path "$GENERATED_EXPRESSION_PATH" \
-    --generated-opexpr-dependency-path "$GENERATED_OPEXPRESS_DEPENDENCY_PATH" \
-    --num "$NUM" \
-    --thread "$THREADS"
-```
+For detailed usage and configurations, refer to the following documents:
+
+- [Generate Expression Config](config/generate_expression.md)
+- [Generate Expression Progess](generate_expression.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

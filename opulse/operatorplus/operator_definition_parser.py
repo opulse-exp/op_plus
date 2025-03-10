@@ -1,7 +1,6 @@
 from lark import Lark
 from config import LogConfig, ParamConfig
 
-##这个解析器好像有点问题，对于一元前缀和后缀好像分不开
 class OperatorDefinitionParser:
     """
     A parser class for dynamically generating and parsing operator definitions.
@@ -90,7 +89,7 @@ class OperatorDefinitionParser:
             definition (str): The operator definition string to be parsed.
 
         Returns:
-            LarkTree: A Lark parsing tree representing the parsed definition.
+            Lark.Tree: A Lark parsing tree representing the parsed definition.
 
         Logs the parsing process and any issues during parsing.
         """
@@ -103,7 +102,7 @@ class OperatorDefinitionParser:
             self.logger.error(f"Error while parsing definition: {e}")
             raise
 
-    def update_definition(self, definition):
+    def update_definition(self, definition) -> str:
         """
         Update the operator definition by replacing indexed numeric atoms with their values from `param_config`.
 

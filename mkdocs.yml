@@ -5,7 +5,7 @@ site_description: 'Custom Operator Generation System'
 
 # Repository
 repo_name: 'Opulse'
-repo_url: 'https://github.com/expmechanicalinterpretability/Opulse.git'
+repo_url: 'https://github.com/opulse-exp/op_plus.git'
 
 # Copyright
 copyright: 'Opulse Team'
@@ -28,6 +28,34 @@ plugins:
   - search
   - mkdocstrings
 
+nav:
+  - "Welcome": index.md
+  - "Config":
+      - "Operator Config": config/generate_operator.md
+      - "Expression Config": config/generate_expression.md
+  - "CoreAPI":
+      - "Operatorplus":
+        - "OperatorInfo": operatorplus/operator_info.md
+        - "ConditionGenerator": operatorplus/condition_generator.md
+        - "OperatorGenerator.md": operatorplus/operator_generator.md
+        - "OperatorManager.md": operatorplus/operator_manager.md
+        - "OperatorDefinitionParser.md": operatorplus/operator_definition_parser.md
+        - "OperatorTransformer.md": operatorplus/operator_transformer.md
+        - "CythonCompiler": operatorplus/compiler.md
+        - "OperatorPriorityManager": operatorplus/operator_priority_manager.md
+        - "OperatorDependencyGraph": operatorplus/operator_dependency_graph.md
+      - "Expression":
+        - "ExpressionNode": expression/expression_node.md
+        - "ExpressionGenerator": expression/expression_generator.md
+        - "BaseConverter": expression/base_converter.md
+        - "ExpressionBaseConverter": expression/expression_base_converter.md
+        - "ExpressionEvaluator": expression/expression_evaluator.md
+  - "Generate":
+      - "Operator Generate": generate_operator.md
+      - "Expression Generate": generate_expression.md
+
+extra:
+  logo_icon: fontawesome/brands/github-alt  # 例如，使用 FontAwesome 图标
 
 
 

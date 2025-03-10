@@ -5,10 +5,9 @@ from operatorplus.condition_generator import ConditionGenerator
 from operatorplus.operator_info import OperatorInfo
 from expression.expression_generator import ExpressionGenerator
 from operatorplus.operator_transformer import OperatorTransformer
-from typing import Dict, List, Any
+from typing import Dict, List, Optional, Any
 from config import LogConfig, ParamConfig
 from config.constants import thres
-from operatorplus.simple_expr_parse import Simple_Expr_Parser, Simple_Expr_Transformer
 from nanoid import generate
 alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -30,7 +29,7 @@ class OperatorGenerator:
             logger (LogConfig): Logger configuration to handle logging functionality.
             condition_generator (ConditionGenerator): A generator responsible for producing conditions.
             expr_generator (ExpressionGenerator): A generator responsible for producing expressions.
-            operator_generator (OperatorManager): Manages operator-related functionality.
+            operator_manager (OperatorManager): Manages operator-related functionality.
 
         Attributes:
             param_config (ParamConfig): Configuration object that holds various parameters.
@@ -82,7 +81,7 @@ class OperatorGenerator:
         self.logger.debug(f"Operator symbol max length: {self.operator_symbol_max_len}")
         self.logger.debug(f"Max if branches: {self.max_if_branches}")
 
-    def get_unicode_symbols(self):
+    def get_unicode_symbols(self) -> list:
         """
         Collects valid Unicode operator symbols from predefined ranges.
 
@@ -111,7 +110,7 @@ class OperatorGenerator:
         self.logger.debug(f"Collected {len(symbols)} Unicode symbols.")
         return symbols
 
-    def random_operator(self, existing_symbols: List[str]):
+    def random_operator(self, existing_symbols: List[str]) -> str:
         """
         Generates a random operator string composed of one or more valid symbols.
 
@@ -151,7 +150,7 @@ class OperatorGenerator:
                     f"Generated operator {new_symbol} already exists. Retrying..."
                 )
 
-    def random_operator_type_and_position(self):
+    def random_operator_type_and_position(self) -> tuple:
         """
         Generates a random operator type and its position (if applicable).
 
@@ -191,8 +190,6 @@ class OperatorGenerator:
         For each base, a random operator symbol is generated, and the operator is added to the operator manager.
         The operator is stored with additional properties, such as its base number and the unary position.
 
-        Returns:
-            None
         """
         self.logger.info(
             "Starting to generate base operators for each base from 2 to max_base."
@@ -243,7 +240,7 @@ class OperatorGenerator:
 
         self.logger.info("Base operator generation completed.")
 
-    def generate_lhs(self, op_symbol, op_type, op_position):
+    def generate_lhs(self, op_symbol, op_type, op_position) ->str:
         """
         Generates the left-hand side (LHS) of an expression based on the operator type and position.
 
@@ -291,7 +288,7 @@ class OperatorGenerator:
         self.logger.info(f"LHS generated: {lhs}")
         return lhs
 
-    def generate_branches(self, order):
+    def generate_branches(self, order) -> list:
         """
         Generates a list of conditional branches for an expression, including 'if' and 'else' branches.
 
@@ -312,7 +309,7 @@ class OperatorGenerator:
 
         self.logger.info(f"Generating {num_if_branches} 'if' branches.")
 
-        #先生成num_if_branches的表达式
+
         exprs = self.expr_generator.create_n_expression_str_with_order(
                 max_depth=random.randint(1, self.expr_generator.max_depth),
                 atom_choice="variable_and_number",
@@ -320,15 +317,13 @@ class OperatorGenerator:
                 branch_num=num_if_branches,
             )
 
-        # 遍历到倒数第二个元素
-        for i, expr in enumerate(exprs[:-1]):  # 使用切片跳过最后一个
+        for i, expr in enumerate(exprs[:-1]):  
             condition = self.condition_generator.generate_condition_expr()
             branches.append((expr, f"if {condition}"))
             self.logger.debug(f"Generated 'if' branch {i+1}: {expr} with condition {condition}")
 
-        # 特殊处理最后一个元素
-        last_expr = exprs[-1]  # 最后一个元素
-        branches.append((last_expr, "else"))  # 将最后一个作为 else 分支
+        last_expr = exprs[-1]  
+        branches.append((last_expr, "else"))  
         self.logger.debug(f"Generated 'else' branch: {last_expr}")
 
         self.logger.info(f"Total branches generated: {len(branches)}.")
@@ -459,7 +454,7 @@ class OperatorGenerator:
                 "Unsupported operator type. Only 'unary' and 'binary' are supported."
             )
 
-    def generate_definition(self, op_symbol, op_type, op_position, choice, order):
+    def generate_definition(self, op_symbol, op_type, op_position, choice, order) -> str:
         """
         Generates a complete operator definition rule based on the provided parameters.
 
@@ -542,7 +537,7 @@ class OperatorGenerator:
             self.logger.warning(f"Unknown choice: {choice}. Returning None.")
             return None
 
-    def generate_operator_data_by_definition(self, choice, order):
+    def generate_operator_data_by_definition(self, choice, order) -> dict:
         """
         Generates operator data based on a specified operator definition type.
 
@@ -590,7 +585,7 @@ class OperatorGenerator:
         func_id = generate(size=10,alphabet=alphabet)
         # Construct the operator data dictionary
         operator_data = {
-            "id": None,  #id被写入文件的时候再被分配，单纯拿来给标序号的
+            "id": None,  
             "func_id": func_id,
             "symbol": op_symbol,
             "n_ary": (
@@ -659,435 +654,7 @@ class OperatorGenerator:
         self.logger.info(f"Random recursive call operator selected: {operator_info}")
         return operator_info  # Returning an instance of OperatorInfo
 
-    # def set_bit_if_not_set(self, called_operator_info, bit_position):
-    #     """
-    #     Sets a specific bit in the `recursive_used_cases` attribute of the given operator
-    #     if that bit is not already set. The method also checks the number of recursive cases
-    #     used and disables recursion if certain conditions are met.
-
-    #     This function performs the following actions:
-    #     1. Checks if the bit at `bit_position` is 0.
-    #     2. If it is 0, sets the bit to 1.
-    #     3. If the operator is unary (n_ary == 1) and all bits in the first 2 positions are set, recursion is disabled.
-    #     4. If the operator is binary (n_ary == 2) and all bits in the first 8 positions are set, recursion is disabled.
-
-    #     Args:
-    #         called_operator_info (OperatorInfo): The operator whose `recursive_used_cases` attribute is to be modified.
-    #         bit_position (int): The bit position to check and set.
-
-    #     Returns:
-    #         bool: Returns `True` if the bit was successfully set, `False` if the bit was already set.
-
-    #     """
-    #     self.logger.debug(
-    #         f"Checking bit position {bit_position} in operator {called_operator_info.symbol}."
-    #     )
-
-    #     # Check if the bit at the given position is 0
-    #     if (called_operator_info.recursive_used_cases & (1 << bit_position)) == 0:
-    #         # If the bit is 0, set it to 1
-    #         called_operator_info.recursive_used_cases |= 1 << bit_position
-    #         self.logger.debug(
-    #             f"Bit {bit_position} was not set. Setting it now. Updated recursive_used_cases: {bin(called_operator_info.recursive_used_cases)}"
-    #         )
-
-    #         # Check conditions for disabling recursion for unary or binary operators
-    #         if called_operator_info.n_ary == 1:
-    #             if called_operator_info.recursive_used_cases == 0b00000011:
-    #                 called_operator_info.is_recursion_enabled = False
-    #                 self.logger.info(
-    #                     f"Recursion disabled for unary operator {called_operator_info.symbol} due to recursive_used_cases: {bin(called_operator_info.recursive_used_cases)}"
-    #                 )
-    #         elif called_operator_info.n_ary == 2:
-    #             if called_operator_info.recursive_used_cases == 0b11111111:
-    #                 called_operator_info.is_recursion_enabled = False
-    #                 self.logger.info(
-    #                     f"Recursion disabled for binary operator {called_operator_info.symbol} due to recursive_used_cases: {bin(called_operator_info.recursive_used_cases)}"
-    #                 )
-
-    #         return True
-    #     else:
-    #         self.logger.debug(
-    #             f"Bit {bit_position} is already set for operator {called_operator_info.symbol}. No action taken."
-    #         )
-    #         return False
-
-    # def check_and_set_recursion_validity(
-    #     self, called_operator_info, op_type, param_order
-    # ):
-    #     """
-    #     Checks the recursion validity for a given operator based on its type (binary or unary),
-    #     and the parameter order. If the conditions are met, it sets the corresponding bit in the
-    #     operator's `recursive_used_cases` attribute to track recursion usage.
-
-    #     This function handles recursion for both binary and unary operators, checking the `param_order`
-    #     and setting the appropriate bit in `recursive_used_cases` for recursion tracking.
-
-    #     Args:
-    #         called_operator_info (OperatorInfo): The operator whose recursion validity is being checked.
-    #         op_type (str): The type of the operator, either "binary" or "unary".
-    #         param_order (tuple): A tuple representing the order of parameters, such as ("result", self.param_config.atoms['left_operand']).
-
-    #     Returns:
-    #         bool: Returns `True` if the bit was successfully set, `False` if the bit was already set.
-
-    #     Raises:
-    #         ValueError: If the `op_type` or `param_order` does not match expected values.
-
-    #     """
-    #     self.logger.debug(
-    #         f"Checking recursion validity for operator {called_operator_info.symbol} of type {op_type} with param order {param_order}."
-    #     )
-
-    #     # Check binary operator conditions (binary -> binary recursion)
-    #     if op_type == "binary" and called_operator_info.n_ary == 2:
-    #         if param_order == ("result", "result"):
-    #             self.logger.debug(
-    #                 "Setting recursion for binary operator with binary-to-binary recursion ('result', 'result')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 0)
-    #         elif param_order == ("result", self.param_config.atoms["left_operand"]):
-    #             self.logger.debug(
-    #                 "Setting recursion for binary operator with binary-to-binary recursion ('result', 'a')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 1)
-    #         elif param_order == ("result", self.param_config.atoms["right_operand"]):
-    #             self.logger.debug(
-    #                 "Setting recursion for binary operator with binary-to-binary recursion ('result', 'b')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 2)
-    #         elif param_order == (self.param_config.atoms["left_operand"], "result"):
-    #             self.logger.debug(
-    #                 "Setting recursion for binary operator with binary-to-binary recursion ('a', 'result')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 3)
-    #         elif param_order == (self.param_config.atoms["right_operand"], "result"):
-    #             self.logger.debug(
-    #                 "Setting recursion for binary operator with binary-to-binary recursion ('b', 'result')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 4)
-
-    #     # Check unary operator conditions with two parameters (unary -> unary recursion)
-    #     elif op_type == "unary" and called_operator_info.n_ary == 2:
-    #         if param_order == ("result", "result"):
-    #             self.logger.debug(
-    #                 "Setting recursion for unary operator with unary-to-unary recursion ('result', 'result')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 5)
-    #         elif param_order == ("result", self.param_config.atoms["left_operand"]):
-    #             self.logger.debug(
-    #                 "Setting recursion for unary operator with unary-to-unary recursion ('result', 'a')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 6)
-    #         elif param_order == (self.param_config.atoms["left_operand"], "result"):
-    #             self.logger.debug(
-    #                 "Setting recursion for unary operator with unary-to-unary recursion ('a', 'result')."
-    #             )
-    #             return self.set_bit_if_not_set(called_operator_info, 7)
-
-    #     # Check binary operator conditions with one parameter (binary -> unary recursion)
-    #     elif op_type == "binary" and called_operator_info.n_ary == 1:
-    #         self.logger.debug(
-    #             "Setting recursion for binary operator with binary-to-unary recursion."
-    #         )
-    #         return self.set_bit_if_not_set(called_operator_info, 0)
-
-    #     # Check unary operator conditions with one parameter (unary -> unary recursion)
-    #     elif op_type == "unary" and called_operator_info.n_ary == 1:
-    #         self.logger.debug(
-    #             "Setting recursion for unary operator with unary-to-unary recursion."
-    #         )
-    #         return self.set_bit_if_not_set(called_operator_info, 1)
-
-    #     else:
-    #         self.logger.error(
-    #             f"Invalid operation: op_type {op_type} and param_order {param_order} are not compatible."
-    #         )
-    #         raise ValueError(
-    #             f"Invalid operation: op_type {op_type} and param_order {param_order} are not compatible."
-    #         )
-
-    #     def generate_recursive_operator_data_by_loop(self):
-    #         """
-    #         Generates recursive operator data, including both unary and binary operators,
-    #         and defines recursive computation functions for the operators. The recursion
-    #         involves calling other operators within the defined computation functions.
-
-    #         This method constructs recursive operator definitions and the corresponding
-    #         computation functions for both unary and binary operators based on the
-    #         random operator type, position, and symbols. It checks recursion validity
-    #         and ensures that recursion will not lead to infinite loops.
-
-    #         The generated operator data includes:
-    #         - The operator's symbol
-    #         - Its type (unary or binary)
-    #         - A computation function
-    #         - A count function
-    #         - A definition for the operator's behavior
-
-    #         Returns:
-    #             dict: A dictionary containing the operator data, including the operator's
-    #                   symbol, definition, and computation functions.
-    #             None: If the recursion validity check fails, returns None.
-    #         """
-
-    #         self.logger.debug("Fetching existing operator symbols to avoid duplication.")
-    #         existing_symbols = self.operator_manager.get_operator_symbols()
-
-    #         # Randomly select a new operator symbol
-    #         op_symbol = self.random_operator(existing_symbols)
-
-    #         self.logger.debug(f"Selected operator symbol: {op_symbol}")
-
-    #         # Randomly choose operator type (unary or binary) and position
-    #         # op_type, op_position = self.random_operator_type_and_position()
-    #         op_type, op_position = "binary", None
-    #         # Set the variables for condition and expression generators
-    #         variables = self.unary_variables if op_type == "unary" else self.binary_variables
-    #         self.condition_generator.set_variables(variables)
-    #         self.expr_generator.set_variables(variables)
-
-    #         # Generate the operator ID
-    #         id = self.operator_manager.get_next_operator_id()
-
-    #         self.logger.debug(f"Generated operator ID: {id}")
-
-    #         # Fetch a random recursive operator to be called in the recursion
-    #         called_operator_info = self.get_random_recursive_call_operator()
-    #         called_id = called_operator_info.id
-    #         called_symbol = called_operator_info.symbol
-
-    #         self.logger.debug(f"Chosen operator for recursion: {called_symbol} (ID: {called_id})")
-
-    #         # Generate the left-hand side expression
-    #         lhs = self.generate_lhs(op_symbol, op_type, op_position)
-
-    #         indent = "    "
-    #         # Handle binary operator recursion
-    #         if op_type == "binary":
-    #             self.logger.debug("Generating recursive binary operator.")
-
-    #             if called_operator_info.n_ary == 2:
-    #                 # Randomly select the parameter order for recursion
-    #                 param_order = random.choice([
-    #                     ("result", "result"),
-    #                     ("result", self.param_config.atoms['left_operand']),
-    #                     ("result", self.param_config.atoms['right_operand']),
-    #                     (self.param_config.atoms['left_operand'], "result"),
-    #                     (self.param_config.atoms['right_operand'], "result")
-    #                 ])
-    #                 param1, param2 = param_order
-
-    #                 self.logger.debug(f"Selected parameter order for recursion: {param_order}")
-
-    #                 # Check recursion validity
-    #                 if not self.check_and_set_recursion_validity(called_operator_info, op_type, param_order):
-    #                     self.logger.warning("Recursion validity check failed.")
-    #                     return None
-
-    #                 # Generate the recursive computation function for binary operator
-    #                 op_compute_fun = f'''def op_{id}(a, b):
-    # {indent}if a == 'NaN' or b == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}result = a
-    # {indent}for i in range(abs(b)):
-    # {indent*2}result = op_{called_id}({param1}, {param2})
-    # {indent}return result
-    # '''
-    #                 op_count_fun = f'''def op_count_{id}(a, b):
-    # {indent}if a == 'NaN' or b == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}count = 0
-    # {indent}for i in range(abs(b)):
-    # {indent*2}count += op_count_{called_id}({param1}, {param2})
-    # {indent}return count
-    # '''
-    #                 # Generate the right-hand side expressions for the recursive function
-    #                 if param1 == "result":
-    #                     param1_str_1 = f"{self.param_config.atoms['left_operand']}{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['right_operand']}-1{self.param_config.atoms['right_parenthesis']}"
-    #                     param1_str_2 = f"{self.param_config.atoms['left_operand']}{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['right_operand']}+1{self.param_config.atoms['right_parenthesis']}"
-    #                 else:
-    #                     param1_str_1 = param1
-    #                     param1_str_2 = param1
-
-    #                 if param2 == "result":
-    #                     param2_str_1 = f"{self.param_config.atoms['left_operand']}{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['right_operand']}-1{self.param_config.atoms['right_parenthesis']}"
-    #                     param2_str_2 = f"{self.param_config.atoms['left_operand']}{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['right_operand']}+1{self.param_config.atoms['right_parenthesis']}"
-    #                 else:
-    #                     param2_str_1 = param2
-    #                     param2_str_2 = param2
-
-    #                 rhs_1 = f"{self.param_config.atoms['left_parenthesis']}{param1_str_1}{self.param_config.atoms['right_parenthesis']}{called_symbol}{self.param_config.atoms['left_parenthesis']}{param2_str_1}{self.param_config.atoms['right_parenthesis']}"
-    #                 rhs_2 = f"{self.param_config.atoms['left_parenthesis']}{param1_str_2}{self.param_config.atoms['right_parenthesis']}{called_symbol}{self.param_config.atoms['left_parenthesis']}{param2_str_2}{self.param_config.atoms['right_parenthesis']}"
-    #                 definition = f"{lhs} = {{{self.param_config.atoms['left_operand']}, if {self.param_config.atoms['right_operand']} == 0; {rhs_1}, if {self.param_config.atoms['right_operand']} > 0; {rhs_2}, else}}"
-
-    #                 self.logger.debug(f"Binary operator definition generated: {definition}")
-
-    #             elif called_operator_info.n_ary == 1:
-    #                 # Check recursion validity for unary call within binary operator
-    #                 if not self.check_and_set_recursion_validity(called_operator_info, op_type, None):
-    #                     self.logger.warning("Recursion validity check failed.")
-    #                     return None
-
-    #                 # Generate recursive function for unary operator call in binary
-    #                 op_compute_fun = f'''def op_{id}(a, b):
-    # {indent}if a == 'NaN' or b == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}result = a
-    # {indent}for i in range(abs(b)):
-    # {indent*2}result = op_{called_id}(result)
-    # {indent}return result
-    # '''
-    #                 op_count_fun = f'''def op_count_{id}(a, b):
-    # {indent}if a == 'NaN' or b == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}count = 0
-    # {indent}for i in range(abs(b)):
-    # {indent*2}count += op_count_{called_id}(result)
-    # {indent}return count
-    # '''
-
-    #                 # Generate the right-hand side for the unary operator in binary recursion
-    #                 param_str_1 = f"{self.param_config.atoms['left_operand']}{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['right_operand']}-1{self.param_config.atoms['right_parenthesis']}"
-    #                 param_str_2 = f"{self.param_config.atoms['left_operand']}{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['right_operand']}+1{self.param_config.atoms['right_parenthesis']}"
-
-    #                 if called_operator_info.unary_position == "prefix":
-    #                     rhs_1 = f"{called_symbol}{self.param_config.atoms['left_parenthesis']}{param_str_1}{self.param_config.atoms['right_parenthesis']}"
-    #                     rhs_2 = f"{called_symbol}{self.param_config.atoms['left_parenthesis']}{param_str_2}{self.param_config.atoms['right_parenthesis']}"
-    #                 elif called_operator_info.unary_position == "postfix":
-    #                     rhs_1 = f"{self.param_config.atoms['left_parenthesis']}{param_str_1}{self.param_config.atoms['right_parenthesis']}{called_symbol}"
-    #                     rhs_2 = f"{self.param_config.atoms['left_parenthesis']}{param_str_2}{self.param_config.atoms['right_parenthesis']}{called_symbol}"
-
-    #                 definition = f"{lhs} = {{{self.param_config.atoms['left_operand']}, if {self.param_config.atoms['right_operand']} == 0; {rhs_1}, if {self.param_config.atoms['right_operand']} > 0; {rhs_2}, else}}"
-
-    #                 self.logger.debug(f"Unary operator within binary operator definition generated: {definition}")
-
-    #         # Handle unary operator recursion
-    #         elif op_type == "unary":
-    #             self.logger.debug("Generating recursive unary operator.")
-
-    #             if called_operator_info.n_ary == 2:
-    #                 param_order = random.choice([("result", "result"), ("result", self.param_config.atoms['left_operand']), (self.param_config.atoms['left_operand'], "result")])
-    #                 param1, param2 = param_order
-
-    #                 self.logger.debug(f"Selected parameter order for recursion: {param_order}")
-
-    #                 if not self.check_and_set_recursion_validity(called_operator_info, op_type, param_order):
-    #                     self.logger.warning("Recursion validity check failed.")
-    #                     return None
-
-    #                 op_compute_fun = f'''def op_{id}(a):
-    # {indent}if a == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}result = a
-    # {indent}for i in range(abs(a)):
-    # {indent*2}result = op_{called_id}({param1}, {param2})
-    # {indent}return result
-    # '''
-    #                 op_count_fun = f'''def op_count_{id}(a):
-    # {indent}if a == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}count = 0
-    # {indent}for i in range(abs(a)):
-    # {indent*2}count += op_count_{called_id}({param1}, {param2})
-    # {indent}return count
-    # '''
-
-    #                 if param1 == "result":
-    #                     if op_position == "prefix":
-    #                         param1_str_1 = f"{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}-1{self.param_config.atoms['right_parenthesis']}"
-    #                         param1_str_2 = f"{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}+1{self.param_config.atoms['right_parenthesis']}"
-    #                     elif op_position == "postfix":
-    #                         param1_str_1 = f"{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}-1{self.param_config.atoms['right_parenthesis']}{op_symbol}"
-    #                         param1_str_2 = f"{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}+1{self.param_config.atoms['right_parenthesis']}{op_symbol}"
-    #                 else:
-    #                     param1_str_1 = param1
-    #                     param1_str_2 = param1
-
-    #                 if param2 == "result":
-    #                     if op_position == "prefix":
-    #                         param2_str_1 = f"{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}-1{self.param_config.atoms['right_parenthesis']}"
-    #                         param2_str_2 = f"{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}+1{self.param_config.atoms['right_parenthesis']}"
-    #                     elif op_position == "postfix":
-    #                         param2_str_1 = f"{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}-1{self.param_config.atoms['right_parenthesis']}{op_symbol}"
-    #                         param2_str_2 = f"{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}+1{self.param_config.atoms['right_parenthesis']}{op_symbol}"
-    #                 else:
-    #                     param2_str_1 = param1
-    #                     param2_str_2 = param1
-
-    #                 rhs_1 = f"{self.param_config.atoms['left_parenthesis']}{param1_str_1}{self.param_config.atoms['right_parenthesis']}{called_symbol}{self.param_config.atoms['left_parenthesis']}{param2_str_1}{self.param_config.atoms['right_parenthesis']}"
-    #                 rhs_2 = f"{self.param_config.atoms['left_parenthesis']}{param1_str_2}{self.param_config.atoms['right_parenthesis']}{called_symbol}{self.param_config.atoms['left_parenthesis']}{param2_str_2}{self.param_config.atoms['right_parenthesis']}"
-    #                 definition = f"{lhs} = {{{self.param_config.atoms['left_operand']}, if {self.param_config.atoms['left_operand']} == 0; {rhs_1}, if {self.param_config.atoms['left_operand']} > 0; {rhs_2}, else}}"
-
-    #                 self.logger.debug(f"Unary operator recursive definition generated: {definition}")
-
-    #             elif called_operator_info.n_ary == 1:
-    #                 # Check recursion validity for unary operator
-    #                 if not self.check_and_set_recursion_validity(called_operator_info, op_type, None):
-    #                     self.logger.warning("Recursion validity check failed.")
-    #                     return None
-
-    #                 op_compute_fun = f'''def op_{id}(a):
-    # {indent}if a == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}result = a
-    # {indent}for i in range(abs(a)):
-    # {indent*2}result = op_{called_id}(result)
-    # {indent}return result
-    # '''
-    #                 op_count_fun = f'''def op_count_{id}(a):
-    # {indent}if a == 'NaN':
-    # {indent*2}return 'NaN'
-    # {indent}count = 0
-    # {indent}for i in range(abs(a)):
-    # {indent*2}count += op_count_{called_id}(result)
-    # {indent}return count
-    # '''
-
-    #                 if op_position == "prefix":
-    #                     param_str_1 = f"{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}-1{self.param_config.atoms['right_parenthesis']}"
-    #                     param_str_2 = f"{op_symbol}{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}+1{self.param_config.atoms['right_parenthesis']}"
-    #                 elif op_position == "postfix":
-    #                     param_str_1 = f"{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}-1{self.param_config.atoms['right_parenthesis']}{op_symbol}"
-    #                     param_str_2 = f"{self.param_config.atoms['left_parenthesis']}{self.param_config.atoms['left_operand']}+1{self.param_config.atoms['right_parenthesis']}{op_symbol}"
-
-    #                 if called_operator_info.unary_position == "prefix":
-    #                     rhs_1 = f"{called_symbol}{self.param_config.atoms['left_parenthesis']}{param_str_1}{self.param_config.atoms['right_parenthesis']}"
-    #                     rhs_2 = f"{called_symbol}{self.param_config.atoms['left_parenthesis']}{param_str_2}{self.param_config.atoms['right_parenthesis']}"
-    #                 elif called_operator_info.unary_position == "postfix":
-    #                     rhs_1 = f"{self.param_config.atoms['left_parenthesis']}{param_str_1}{self.param_config.atoms['right_parenthesis']}{called_symbol}"
-    #                     rhs_2 = f"{self.param_config.atoms['left_parenthesis']}{param_str_2}{self.param_config.atoms['right_parenthesis']}{called_symbol}"
-
-    #                 definition = f"{lhs} = {{{self.param_config.atoms['left_operand']}, if {self.param_config.atoms['left_operand']} == 0; {rhs_1}, if {self.param_config.atoms['left_operand']} > 0; {rhs_2}, else}}"
-
-    #                 self.logger.debug(f"Unary operator definition generated: {definition}")
-    #         else:
-    #             raise ValueError("Unsupported operator type. Only 'unary' and 'binary' are supported.")
-
-    #         operator_data = {
-    #             "id": id,  # Unique identifier for the operator.
-    #             "symbol": op_symbol,  # The symbol representing the operator (e.g., "+", "-", "*").
-    #             "n_ary": 1 if op_type == "unary" else 2,  # Arity of the operator (1 for unary, 2 for binary).
-    #             "unary_position": op_position if op_type == "unary" else None,  # Position of the unary operator, None for binary.
-    #             "is_base": None,  # Initially no base operator flag.
-    #             "definition": definition,  # Recursive definition of the operator.
-    #             "definition_type": "recursive_definition",  # Type of the definition ("recursive_definition").
-    #             "priority": None,  # Operator priority, not assigned yet.
-    #             "associativity_direction": None,  # Operator associativity, not assigned yet.
-    #             "n_order": None,  # Computation order, managed by OperatorManager.
-    #             "op_compute_func": op_compute_fun,  # Function to compute the operator.
-    #             "op_count_func": op_count_fun,  # Function to count operations or recursive calls.
-    #             "properties": None,  # Additional properties of the operator, None initially.
-    #             "dependencies": None,  # Dependencies of the operator, None initially.
-    #             "is_temporary": True,  # Flag indicating the operator is temporarily generated.
-    #         }
-
-    #         # Log the generated operator data for tracking purposes.
-    #         self.logger.info(f"Generated operator data: {operator_data}")
-
-    #         return operator_data
-
-    def generate_recursive_operator_data_by_loop(self, order):
+    def generate_recursive_operator_data_by_loop(self, order) -> Optional[dict]:
         """
         Generates recursive operator data, including both unary and binary operators,
         and defines recursive computation functions for the operators. The recursion
@@ -1149,11 +716,11 @@ class OperatorGenerator:
 
         indent = "    "
         
-        #在这里生成一个基础的expr拿来作为结果的初始值
-        choices = [self.param_config.atoms["left_operand"], self.param_config.atoms["right_operand"], int(random.uniform(-100, 100))]  # 可以将范围设定为任意值
+        #Generate a basic expr here to use as the initial value of the result
+        choices = [self.param_config.atoms["left_operand"], self.param_config.atoms["right_operand"], int(random.uniform(-100, 100))]  
         expr_str = f"{random.choice(choices)}"
 
-        #这里对循环变量的范围做一个限制
+        #The range of the loop variable is restricted here.
         if order == 3:
             loop_thres=int(1e6)
         elif order == 4:

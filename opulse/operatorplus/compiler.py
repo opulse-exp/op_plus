@@ -5,14 +5,19 @@ from Cython.Build import cythonize
 from pathlib import Path
 import importlib
 import sys
+from typing import Optional
+from types import ModuleType
 
 class CythonCompiler:
     def __init__(self, compile_dir: str = './compiled_funcs'):
         """
-        初始化Cython编译器, 设置编译目录并确保该目录存在。
+        Initializes the Cython compiler, sets the compilation directory, and ensures it exists.
 
-        参数:
-        - compile_dir: 存储已编译模块的目录，默认为'./compiled_funcs'
+        Parameters:
+            compile_dir (str): Directory to store compiled modules, default is './compiled_funcs'.
+
+        Raises:
+            OSError: If the directory cannot be created due to permission issues or other errors.
         """
         self.compile_dir = Path(compile_dir)
         if not self.compile_dir.exists():
@@ -22,15 +27,16 @@ class CythonCompiler:
 
     def compile_function(self, func_code: str, func_name: str, deps: list = None) -> None:
         """
-        动态编译一个Cython函数并生成一个模块。
-        
-        参数:
-        - func_code: 新的函数代码
-        - func_name: 函数名称
-        - deps: 依赖模块的列表, 默认None表示没有依赖
+        Dynamically compiles a Cython function and generates a module.
+
+        Parameters:
+            func_code (str): The new function code provided as a string.
+            func_name (str): The function name, used to generate the module name and file name.
+            deps (List[str]): List of dependent modules, default is None (no dependencies).
+
+        Raises:
+            Exception: If there is an error during the compilation process.
         """
-         # 尝试导入模块
-        # 准备模块名称和文件路径
         module_name = f"module_{func_name}"
         if self.import_module(module_name) == None:
             
@@ -40,19 +46,12 @@ class CythonCompiler:
         
             pyx_file_path = self.compile_dir / f"{module_name}.pyx"
 
-            # 生成 .pyx 文件
             with open(pyx_file_path, "w") as f:
-                # 如果有依赖模块，先写入 import 语句
                 for dep in deps:
                     f.write(f"from {dep} import *\n")
-                
-                # 然后写入新的函数代码
                 f.write(func_code)
-
             try:
-                #4是并发编译
                 # os.system(f"cythonize -a -i -j 8 -3 {pyx_file_path}")
-                
                 os.system(f"cythonize -i -j 8 -3 {pyx_file_path}")
                 # cythonize([str(pyx_file_path)], build_dir=str(self.compile_dir))
                 print(f"Successfully compiled {module_name}")
@@ -60,7 +59,19 @@ class CythonCompiler:
                 print(f"Error compiling {module_name}: {e}")
 
             
-    def import_module(self, module_name):
+    def import_module(self, module_name) -> Optional[ModuleType]:
+        """
+        Attempts to import the specified module from the compilation directory.
+
+        Parameters:
+            module_name (str): The name of the module.
+
+        Returns:
+            Optional[ModuleType]: Returns the imported module object on success; returns `None` on failure.
+
+        Raises:
+            ImportError: If the module cannot be imported due to missing dependencies or other issues.
+        """
         compiled_dir = str(Path(self.compile_dir).resolve())
         # Ensure sys.path is set up correctly
         if compiled_dir not in sys.path:
@@ -74,15 +85,28 @@ class CythonCompiler:
             # print(f"Error importing module {module_name}: {e}")
             return None
     
-    def import_module_from_path(self, module_name):
+    def import_module_from_path(self, module_name) -> ModuleType:
+        """
+        Dynamically loads a module via its `.so` file path.
+
+        Parameters:
+            module_name (str): The name of the module.
+
+        Returns:
+            ModuleType: Returns the loaded module object on success.
+
+        Raises:
+            FileNotFoundError: If the `.so` file does not exist in the specified directory.
+            ImportError: If the module cannot be loaded due to invalid file format or other issues.
+        """
+
         compiled_dir = str(Path(self.compile_dir).resolve())
         so_file = f"{module_name}.cpython-310-x86_64-linux-gnu.so"
         full_path = os.path.join(compiled_dir, so_file)
 
-        # 动态加载模块
         spec = importlib.util.spec_from_file_location(module_name, full_path)
         module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module#缓存模块
+        sys.modules[module_name] = ModuleType
         spec.loader.exec_module(module)
         return module
 
@@ -95,7 +119,6 @@ class CythonCompiler:
 #     compiler.compile_function(func_code, "add")
 #     module_add=compiler.import_module("module_add")
 #     print(module_add.add(3,4))
-#     # 如果没有异常输出，说明编译和导入成功
 #     print("Simple function compiled and imported successfully.")
 
 

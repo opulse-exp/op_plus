@@ -60,16 +60,15 @@ class ExpressionBaseConverter:
             converted_str = base_converter.convert(decimal_num, output_base)
             return converted_str
 
-        # 使用正则表达式替换所有匹配的部分
+
         pattern = r"\$(\d+)\$"
         new_expression = re.sub(pattern, replacer, expression)
         return new_expression
 
 
-# 示例使用
 # if __name__ == "__main__":
-#     expr = "$5$+$4$"  # 输入表达式
-#     target_base = 16  # 目标基数（例如十六进制）
+#     expr = "$5$+$4$"  
+#     target_base = 16  
 
 #     try:
 #         converted_expr = ExpressionBaseConverter.replace_decimal_with_base(

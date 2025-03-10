@@ -3,14 +3,10 @@ logging:
   level:  DEBUG  # or DEBUG, WARNING, ERROR, CRITICAL
   log_dir: "logs"  # Log directory
   log_file: "data.log"  # Log file name
-
+  save_file: true
 #numeric representation
 max_base: 16
 custom_digits : "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-#考虑限定数域，循环域
-number_domain: [-1000,1000]
-
 
 variable_atoms:
   - left_operand: "a"
@@ -20,32 +16,32 @@ other_symbols_atoms:
   left_parenthesis: "(" 
   right_parenthesis: ")"
   equals_sign: "="
-  nan_symbol: "NaN"  # 表示无解
-  inf_symbol: "Inf"  # 表示无穷大
-  neg_inf_symbol: "-Inf"  # 表示负无穷大
+  nan_symbol: "NaN"  
+  inf_symbol: "Inf"  
+  neg_inf_symbol: "-Inf"  
 
-#运算符生成
 operator_symbol_min_len: 1
 operator_symbol_max_len: 3
-#对于条件
+
 basic_operator_symbols: ["+", "-", "*", "/", "%"]
 comparison_ops: ["==", ">", "<", ">=", "<=", "!="]
 logical_connectors: ["and", "or"]
 condition_numeric_range: 
   max_value: 1000
-  min_value: 0 #不用负数，是因为其实一元符号里面有负数
+  min_value: 0 
 condition_probabilities:
   1: 0.7
   2: 0.2
   3: 0.1
-#对于分支数目
+
 max_if_branches: 2
 
-# 表达式生成
-expr_variables: [a,b]
+expr_variables:
+  - a
+  - b
 expr_numeric_range: 
   max_value: 1000
-  min_value: 0 #不用负数，是因为其实一元符号里面有负数
+  min_value: 0 
 expr_max_depth: 3
 expr_type_weights: 
   binary: 0.7
@@ -64,3 +60,6 @@ result_base:
 longer_result_compute:
   flag: true
   base: 10
+
+
+

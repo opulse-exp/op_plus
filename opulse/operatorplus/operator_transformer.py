@@ -2,40 +2,7 @@ from lark import Transformer, v_args, Token, Tree
 from operatorplus.operator_manager import OperatorManager
 from config import LogConfig, ParamConfig
 import re
-
-# def add_nan_check_to_conditions(condition):
-#     # Regular expression to match op_xx(a, b) or op_xx(a)
-#     pattern = re.compile(r'op_(\d+)\(([^)]+)\)')
-
-#     # List to store NaN checks
-#     nan_checks = []
-
-#     # Step 1: Extract all the matching op_xx(a) or op_xx(a, b) instances
-#     matches = re.findall(pattern, condition)
-
-#     # Step 2: Generate NaN checks for each match
-#     for match in matches:
-#         func_id = match[0]  # op_xx
-#         params = match[1]    # a or a,b
-
-#         # If there is only one parameter (e.g., op_41(a)), directly check this parameter
-#         if ',' not in params:
-#             nan_checks.append(f"op_{func_id}({params}) != 'NaN'")
-#         # If there are two parameters (e.g., op_4(a, 591)), handle them separately
-#         else:
-#             a, b = params.split(',')
-#             nan_checks.append(f"op_{func_id}({a},{b}) != 'NaN'")
-
-#     if matches == None:
-#         final_condition = f"{condition}"
-#     else:
-#         # Step 3: Create the NaN check group
-#         nan_check_group = ' and '.join(nan_checks)
-
-#         # Step 4: Replace the condition with NaN checks added before the original condition
-#         final_condition = f"({nan_check_group}) and ({condition})"
-
-#     return final_condition
+import numba
 
 class OperatorTransformer(Transformer):
     def __init__(
@@ -341,7 +308,7 @@ class OperatorTransformer(Transformer):
         return result
 
     @v_args(inline=True)
-    def rhs_expr(self, *args):
+    def rhs_expr(self, *args) -> list:
         """
         Processes the right-hand side expressions, filtering out semicolons and empty items.
 
@@ -410,14 +377,14 @@ class OperatorTransformer(Transformer):
         # elif func_unary == 2:
         #     nan_check = f"{indent}if {params[0]} in special_values or {params[1]} in special_values:\n{indent*2}return 1\n"
 
-        # count_func_def += nan_check#为计数函数添加前面的特殊判断
+        # count_func_def += nan_check
 
         for i, branch in enumerate(filtered_rhs_expr):
             branch_type = branch[0]
             if branch_type == "if_branch":
                 _, expr, condition, count_str = branch
 
-                # condition = add_nan_check_to_conditions(condition)#条件也不需要添加nan判断了
+                # condition = add_nan_check_to_conditions(condition)
                 
                 #Because of the previous judgement on NaN, all are elif
                 if i == 0:
@@ -456,7 +423,7 @@ class OperatorTransformer(Transformer):
                 else:
                     func_def += f"{indent}return {expr}\n"
                     count_func_def += f"{indent}count = {count_str}\n"
-        count_func_def += f"{indent}return count\n"#最后对count进行一下判断，确保返回值要大于0
+        count_func_def += f"{indent}return count\n"
         self.logger.debug(f"Generated Compute function:\n{func_def}")
         self.logger.debug(f"Generated Count function:\n{count_func_def}")
 

@@ -6,12 +6,12 @@ from config import LogConfig, ParamConfig
 
 if __name__ == "__main__":
     config = ParamConfig(
-        "/map-vepfs/kaijing/exp_mechanicalinterpretability/Opulse/opulse/config/generate_operator.yaml"
+        "config/generate_operator.yaml"
     )
     logging_config = config.get_logging_config()
     log = LogConfig(logging_config)
     op_manager = OperatorManager(
-        "/map-vepfs/kaijing/exp_mechanicalinterpretability/Opulse/opulse/data/operator/generated_operators_12_25_test.jsonl",
+        "data/operator/operator_100.jsonl",
         config,
         log,
     )

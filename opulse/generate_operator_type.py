@@ -11,13 +11,11 @@ import random
 from config.constants import thres
 import os
 import hashlib
-from load_operators import load_operators
 
 global logger
-#局部的全局
+#Local global
 compute_func=None
 count_func=None
-
 
 def check_syntax(code: str) -> bool:
     logger.debug(f"Checking syntax for code: {code}")
@@ -31,52 +29,36 @@ def check_syntax(code: str) -> bool:
 
 def is_binary_operator(function):
     """
-    判断一个函数是否是二元运算符。
+    Determine if a function is a binary operator.
     """
-    # 获取函数的 AST（抽象语法树）
     tree = ast.parse(function)
-    
-    # 找到所有的函数定义
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
-            # 获取函数签名的参数
             arg_names = [arg.arg for arg in node.args.args]
             if len(arg_names) != 2:
-                return False  # 如果参数不是两个，直接返回 False
-            
-            # 检查函数体是否使用了两个参数
+                return False  
             used_args = set()
             for sub_node in ast.walk(node):
                 if isinstance(sub_node, ast.Name) and sub_node.id in arg_names:
                     used_args.add(sub_node.id)
-            
-            # 如果两个参数都被使用，则认为是二元运算
             return len(used_args) == 2
     return False
 
 
 def is_unary_operator(function):
+    """ 
+    Determine if a function is a unary operator. 
     """
-    判断一个函数是否是一个一元运算符。
-    """
-    # 获取函数的 AST（抽象语法树）
     tree = ast.parse(function)
-    
-    # 找到所有的函数定义
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
-            # 获取函数签名的参数
             arg_names = [arg.arg for arg in node.args.args]
             if len(arg_names) != 1:
-                return False  # 如果参数不是一个，直接返回 False
-            
-            # 检查函数体是否使用了这个唯一的参数
+                return False 
             used_args = set()
             for sub_node in ast.walk(node):
                 if isinstance(sub_node, ast.Name) and sub_node.id in arg_names:
                     used_args.add(sub_node.id)
-            
-            # 如果唯一的参数被使用，则认为是有效的一元运算符
             return len(used_args) == 1
     
     return False
@@ -162,7 +144,7 @@ def check_duplicate_returns_in_branches(function_code: str) -> bool:
 
 def get_operator_compute_funcs(globals_dict):
     """
-    获取当前 op_manager 中所有操作符的计算函数。
+    Retrieve the computation functions of all operators in the current op_manager.
     """
     operator_compute_funcs = []
     all_operators = globals_dict["op_manager"].operators
@@ -172,36 +154,32 @@ def get_operator_compute_funcs(globals_dict):
 
 def extract_function_body(func):
     """
-    提取函数体的代码内容，去掉函数的定义部分（即去掉 def 行）。
+    Extract the code content of the function body, removing the definition part (i.e., the `def` line).
     """
     try:
-        # 使用 ast.parse 解析函数定义
         tree = ast.parse(func)
-        # 获取函数体部分（去掉 'def' 语句），即函数体的语句列表
-        body = tree.body[0].body  # 获取函数体的节点列表
-
-        # 将函数体的 AST 转换回代码字符串
-        func_body_code = ast.unparse(body)  # 从 AST 节点列表生成代码
+        body = tree.body[0].body  
+        func_body_code = ast.unparse(body)  
         return func_body_code
     except Exception as e:
-        return None  # 解析失败返回 None
+        return None  
 
 def compare_function_bodies(func1, func2):
     """
-    比较两个函数的计算函数是否相同。通过解析 AST 来检测语法结构的相似性。
+    Compare whether the computation functions of two functions are the same by analyzing the AST to detect structural similarities.
     """
     body1 = extract_function_body(func1)
     body2 = extract_function_body(func2)
 
-    # 如果无法提取函数体，返回 False
     if body1 is None or body2 is None:
         return False
 
-    # 比较函数体的 AST 结构
     return body1 == body2
 
 def get_function_hash(func):
-    """通过哈希计算函数体"""
+    """
+    Compute the hash of the function body.
+    """
     body = extract_function_body(func)
     if body is None:
         return None
@@ -209,17 +187,17 @@ def get_function_hash(func):
 
 def check_function_similarity(new_func, existing_funcs):
     """
-    检查当前新生成的操作符计算函数是否与已有操作符的计算函数同义。
+    Check if the newly generated operator's computation function is equivalent to any existing operator's computation function.
     """
     new_func_hash = get_function_hash(new_func)
     if new_func_hash is None:
         return False
 
-    # 遍历已有的哈希值，如果存在相同的哈希值，则进一步比较
+    # Iterate through existing hashes, and if a matching hash is found, further compare the function bodies
     for existing_func in existing_funcs:
         existing_func_hash = get_function_hash(existing_func)
         if existing_func_hash == new_func_hash:
-            # 如果哈希值相同，进一步比较函数体
+            # If hashes match, further compare the function bodies
             if compare_function_bodies(new_func, existing_func):
                 return True
     return False
@@ -231,9 +209,9 @@ def test_unary_op_compute_func(a: int):
     logger.debug(f"Running test_unary_op_compute_func with a: {a}")
     try:
         result = compute_func(a)
-        # logger.debug(f"Result of compute_func: {result}")
+        logger.debug(f"Result of compute_func: {result}")
         assert isinstance(result, (int, float)), f"Expected result to be either an integer or a float, but got {type(result)}"
-        # logger.info(f"test_unary_op_compute_func passed for a: {a}")
+        logger.info(f"test_unary_op_compute_func passed for a: {a}")
     except Exception as e:
         logger.error(f"Error in test_unary_op_compute_func with a: {a} - {e}")
         raise
@@ -244,9 +222,9 @@ def test_unary_op_count_func(a: int):
     logger.debug(f"Running test_unary_op_count_func with a: {a}")
     try:
         result = count_func(a)
-        # logger.debug(f"Result of count_func: {result}")
+        logger.debug(f"Result of count_func: {result}")
         assert isinstance(result, (int, float)), f"Expected result to be either an integer or a float, but got {type(result)}"
-        # logger.info(f"test_unary_op_count_func passed for a: {a}")
+        logger.info(f"test_unary_op_count_func passed for a: {a}")
     except Exception as e:
         logger.error(f"Error in test_unary_op_count_func with a: {a} - {e}")
         raise
@@ -258,9 +236,9 @@ def test_binary_op_compute_func(a: int, b: int):
     try:
         result = compute_func(a, b)
         logger.debug(f"Running test_binary_op_compute_func with a: {a}, b: {b}, result: {result}")
-        # logger.debug(f"Result of compute_func: {result}")
+        logger.debug(f"Result of compute_func: {result}")
         assert isinstance(result, (int, float)), f"Expected result to be either an integer or a float, but got {type(result)}"
-        # logger.info(f"test_binary_op_compute_func passed for a: {a}, b: {b}")
+        logger.info(f"test_binary_op_compute_func passed for a: {a}, b: {b}")
     except Exception as e:
         logger.error(f"Error in test_binary_op_compute_func with a: {a}, b: {b} - {e}")
         raise
@@ -272,9 +250,9 @@ def test_binary_op_count_func(a: int, b: int):
     try:
         result = count_func(a, b)
         logger.debug(f"Running test_binary_op_count_func with a: {a}, b: {b}, result: {result}")
-        # logger.debug(f"Result of count_func: {result}")
+        logger.debug(f"Result of count_func: {result}")
         assert isinstance(result, (int, float)), f"Expected result to be either an integer or a float, but got {type(result)}"
-        # logger.info(f"test_binary_op_count_func passed for a: {a}, b: {b}")
+        logger.info(f"test_binary_op_count_func passed for a: {a}, b: {b}")
     except Exception as e:
         logger.error(f"Error in test_binary_op_count_func with a: {a}, b: {b} - {e}")
         raise
@@ -310,23 +288,10 @@ def test_binary_op_executability():
         logger.error(f"Error in test_binary_op_executability: {e}")
         return False
 
-def initialize_globals(config_path: str, initial_operators_path: str, cython_cache_dir: str, max_workers: int):
+def initialize_globals(config_path: str, initial_operators_path: str, cython_cache_dir: str):
     """
     Initializes global variables including configuration loading, 
     creation of the operator manager, and related generators.
-    
-    This function loads the configuration, sets up logging, initializes
-    the operator manager, and generates the required generators for 
-    handling operators, conditions, and expressions.
-    
-    Args:
-        config_path (str): Path to the configuration file.
-        initial_operators_path (str): Path to the initial operator definitions.
-    
-    Returns:
-        dict: A dictionary containing the initialized objects for configuration, logging, 
-              operator manager, condition generator, expression generator, operator generator, 
-              parser, transformer, and operator priority manager.
     """
     # Load configuration
     # global config
@@ -341,9 +306,7 @@ def initialize_globals(config_path: str, initial_operators_path: str, cython_cac
     # Initialize Generators
     condition_generator = ConditionGenerator(config, log, op_manager)
     expr_generator = ExpressionGenerator(config, log, cython_cache_dir, op_manager)
-    expr_parser = Simple_Expr_Parser(config, log)
-    expr_transformer = Simple_Expr_Transformer(config, log, op_manager)
-    
+
     op_generator = OperatorGenerator(
         param_config=config, 
         logger=log, 
@@ -374,73 +337,6 @@ def initialize_globals(config_path: str, initial_operators_path: str, cython_cac
         'compiler':compiler
     }
 
-
-def initialize_globals_continue(config_path: str, initial_operators_path: str, cython_cache_dir: str, max_workers: int):
-    """
-    Initializes global variables including configuration loading, 
-    creation of the operator manager, and related generators.
-    
-    This function loads the configuration, sets up logging, initializes
-    the operator manager, and generates the required generators for 
-    handling operators, conditions, and expressions.
-    
-    Args:
-        config_path (str): Path to the configuration file.
-        initial_operators_path (str): Path to the initial operator definitions.
-    
-    Returns:
-        dict: A dictionary containing the initialized objects for configuration, logging, 
-              operator manager, condition generator, expression generator, operator generator, 
-              parser, transformer, and operator priority manager.
-    """
-    # Load configuration
-    # global config
-    config = ParamConfig(config_path)
-    logging_config = config.get_logging_config()
-    log = LogConfig(logging_config)
-    global logger
-    logger = log.get_logger()
-    # Initialize Operator Manager
-    compiler = CythonCompiler(cython_cache_dir)
-    
-    op_manager = OperatorManager(initial_operators_path, config, log, cython_cache_dir, compiler, False)
-    # Initialize Generators
-    condition_generator = ConditionGenerator(config, log, op_manager)
-    expr_generator = ExpressionGenerator(config, log, cython_cache_dir, op_manager)
-    expr_parser = Simple_Expr_Parser(config, log)
-    expr_transformer = Simple_Expr_Transformer(config, log, op_manager)
-    
-    op_generator = OperatorGenerator(
-        param_config=config, 
-        logger=log, 
-        condition_generator=condition_generator, 
-        expr_generator=expr_generator,
-        operator_manager=op_manager
-    )
-    
-    # Parsers and transformers
-    parser = OperatorDefinitionParser(config, log)
-    transformer = OperatorTransformer(config, log, op_manager)
-    op_priority_manager = OperatorPriorityManager(log, op_manager)
-
-    # Debug logging
-    logger.debug("Global variables initialized successfully.")
-    
-    return {
-        'config': config,
-        'log': log,
-        'logger': logger,
-        'op_manager': op_manager,
-        'condition_generator': condition_generator,
-        'expr_generator': expr_generator,
-        'op_generator': op_generator,
-        'parser': parser,
-        'transformer': transformer,
-        'op_priority_manager': op_priority_manager,
-        'compiler':compiler
-    }
-    
-#仅仅生成一条
 def generate_operator_type(globals_dict, operator_type, order):
     """
     Generate a specified type of operators and handle their creation, parsing, 
@@ -461,7 +357,6 @@ def generate_operator_type(globals_dict, operator_type, order):
     while True:
         # Create a new operator based on the specified type
         operator_data = globals_dict["op_generator"].create_operator_info(choice=operator_type, order=order)
-        # new_operator = globals_dict["op_manager"].add_operator(operator_data) #不需要再添加进去了
         new_operator = OperatorInfo(**operator_data)
         # Update operator state to ensure it's not temporary
         new_operator.is_temporary = False
@@ -474,7 +369,6 @@ def generate_operator_type(globals_dict, operator_type, order):
                 globals_dict["logger"].debug(f"Parsed definition: {def_tree}")
             except Exception as e:
                 globals_dict["logger"].error(f"Error parsing definition: {e}")
-                # globals_dict["op_manager"].remove_operator(new_operator.id)
                 continue
 
             if def_tree is not None:
@@ -484,45 +378,30 @@ def generate_operator_type(globals_dict, operator_type, order):
                     new_operator.is_temporary = True
                 except Exception as e:
                     globals_dict["logger"].error(f"Error transforming the parsed definition: {e}")
-                    # globals_dict["op_manager"].remove_operator(new_operator.id)
                     continue
-
-        # # Get the available functions from the operator manager
-        # available_funcs = globals_dict["op_manager"].get_available_funcs()
 
         # Update global variables to ensure the correct compute and count functions are set
         global compute_func, count_func
         
-        ##先提取它的依赖，为编译这个函数提供方便
         globals_dict["op_manager"].extract_op_dependencies(new_operator)
         
         dependencies = getattr(new_operator, 'dependencies', [])
         deps = [f"module_{dep}" for dep in dependencies]
-        func_code_str = f"thres = {2**31 - 1}\n\n"#添加thres变量的值和限制
+        func_code_str = f"thres = {2**31 - 1}\n\n"
         func_code_str += f"# Operator Func ID: {new_operator.func_id} - op_compute_func\n"
         func_code_str += f"{new_operator.op_compute_func}\n\n"
         func_code_str += f"# Operator Func ID: {new_operator.func_id} - op_count_func\n"
         func_code_str += f"{new_operator.op_count_func}\n\n"
         globals_dict["compiler"].compile_function(func_code_str, new_operator.func_id, deps = deps) 
 
-        new_operator.module = globals_dict["compiler"].import_module_from_path(f"module_{operator.func_id}")
-        # ##!编译这个计算函数和计数函数
-        # globals_dict["compiler"].
-        # globals_dict["op_manager"].save_op_funcs_to_file()
-
-        # compute_func = getattr(op_module, f"op_{new_operator.func_id}", None)
-        # count_func = getattr(op_module, f"op_count_{new_operator.func_id}", None)
+        new_operator.module = globals_dict["compiler"].import_module_from_path(f"module_{new_operator.func_id}")
 
         compute_func = new_operator.get_compute_function()
         count_func = new_operator.get_count_function()
-        # # 动态获取计算函数和计数函数
-        # compute_func = getattr(op_func, f"op_{new_operator.id}")
-        # count_func = getattr(op_func, f"op_count_{new_operator.id}")
-        
+
         if compute_func is None and count_func is None:
             globals_dict["logger"].debug("Compile func failed.")
-            # globals_dict["op_manager"].remove_operator(new_operator.id)
-            continue  # 如果发现相似函数，跳过当前操作符
+            continue  
         
         # First, check the syntax validity of the compute and count functions
         if test_syntax_validity(new_operator.op_compute_func, new_operator.op_count_func) == False:
@@ -532,90 +411,137 @@ def generate_operator_type(globals_dict, operator_type, order):
         if new_operator.n_ary == 1:
             if is_unary_operator(new_operator.op_compute_func)==False:
                 globals_dict["logger"].debug("is_unary_operator_check is False")
-                # globals_dict["op_manager"].remove_operator(new_operator.id)
                 continue
         elif new_operator.n_ary == 2:
             if is_binary_operator(new_operator.op_compute_func)==False:
                 globals_dict["logger"].debug("is_binary_operator_check is False")
-                # globals_dict["op_manager"].remove_operator(new_operator.id)
                 continue
         
         if check_single_function_call_with_same_args(new_operator.op_compute_func) ==False:
-            # globals_dict["op_manager"].remove_operator(new_operator.id)
             continue
         
         if check_single_function_call_with_same_args(new_operator.op_compute_func) ==False:
-            # globals_dict["op_manager"].remove_operator(new_operator.id)
             continue
         
         if check_duplicate_returns_in_branches(new_operator.op_compute_func) ==False:
-            # globals_dict["op_manager"].remove_operator(new_operator.id)
             continue
         
-        # 获取当前 op_manager 中所有操作符的计算函数
         existing_funcs = get_operator_compute_funcs(globals_dict)
 
-        # 检查新操作符的计算函数是否与现有操作符计算函数同义
         if check_function_similarity(new_operator.op_compute_func, existing_funcs):
             globals_dict["logger"].debug("Found a similar function in existing operators")
-            # globals_dict["op_manager"].remove_operator(new_operator.id)
-            continue  # 如果发现相似函数，跳过当前操作符
-        
+            continue  #
         
         # Validate whether the operator is executable based on its arity (1 or 2)
         if new_operator.n_ary == 1:
-            # #先调用一次让numba进行临时编译
-            # # try:
-            # print(compute_func(0))
-            # print(count_func(0))
-            # except Exception as e:
-            #     globals_dict["op_manager"].remove_operator(new_operator.id)
-            #     continue
             is_executable = test_unary_op_executability()
         elif new_operator.n_ary == 2:
-            # #先调用一次让numba进行临时编译
-
-            # print(compute_func(0,0))
-            # print(count_func(0,0))
-
             is_executable = test_binary_op_executability()
 
-        
         # Process successful operators
         if is_executable:
             new_operator.is_temporary = False
-            # # Record the operator's dependencies
-            # globals_dict["op_manager"].extract_op_dependencies(new_operator.id)
-            # Calculate the operator's order (priority)
             globals_dict["op_manager"].calculate_order(new_operator)
-            #判断是否等于order
             if new_operator.n_order != order:
                 globals_dict["logger"].debug("n_order is not equal to needed order.")
-                # globals_dict["op_manager"].remove_operator(new_operator.id)
-                continue  # 如果发现相似函数，跳过当前操作符
-            
-            # globals_dict["op_manager"].add_available_funcs(new_operator)
-            
-            # Validate the operator's properties
-            #TODO: will be optimised to use the z3 library to find unsatisfiable a and b
-            # if new_operator.n_ary == 1:
-            #     new_operator.properties = validate_unary_property()
-            # elif new_operator.n_ary == 2:
-            #     new_operator.properties = validate_binary_property()
-            
+                continue  
             globals_dict["logger"].debug(f"Operator {new_operator.func_id} is executable.")
-            # globals_dict["op_manager"].save_operator_to_temp(new_operator)
-            # globals_dict["logger"].debug(f"Operator {new_operator.id} has been successfully written to the temp file.")
-            # generated_count += 1
-           
             return new_operator  
-            # operators_dict[new_operator.func_id] = new_operator #!添加到一个dict里面
-            # globals_dict["op_manager"].save_operators_to_jsonl(file_path)#这时候再根据文件的大小更新id并进行写入
         else:
             continue
-        #     globals_dict["op_manager"].remove_operator(new_operator.id)
-        ##直接返回这个operator_data
+
         
+def generate_randop(globals_dict: Dict[str, Any], file_path: str, num: int, order: int):
+    """
+    Generates random operators based on different types of definitions 
+    and assigns priorities. The function will generate operators of 
+    various types (simple, recursive, and branch) and then assign 
+    binding, priority, and generate compute and count functions.
+
+    The function follows these steps:
+    1. Generates operators of different types (simple, recursive, 
+       branch).
+    2. Assigns binding and priority to the operators.
+    3. Generates compute and count code for each operator.
+    4. Saves the operators to a temporary file and assigns them to 
+       the operator manager.
+
+    Args:
+        globals_dict (Dict[str, Any]): The global dictionary containing 
+            configurations and relevant objects for operator generation.
+        file_path (str): Path to the file where generated operators 
+            will be saved.
+        num (int): The total number of operators to generate.
+    """
+    
+
+    # Calculate the number of operators for each type of definition
+    simple_definition_num = int(num * 0.2)  # Number of simple definitions
+    # recursive_definition_num = int(num * 0.2)  # Number of recursive definitions
+    branch_definition_num = int(num * 0.2)  # Number of branch definitions
+    random_definition_num = num - simple_definition_num - branch_definition_num 
+    
+    # Generate simple definitions
+    globals_dict["logger"].debug(f"Generating {simple_definition_num} simple definitions.")
+    generate_operator_type(globals_dict, file_path, 'simple_definition', simple_definition_num, order)
+    
+    # Generate branch definitions
+    globals_dict["logger"].debug(f"Generating {branch_definition_num} branch definitions.")
+    generate_operator_type(globals_dict, file_path, 'branch_definition', branch_definition_num, order)
+    
+    while random_definition_num > 0:
+        # operator_type = random.choice(['simple_definition', 'branch_definition', 'recursive_definition'])
+        operator_type = random.choice(['simple_definition', 'branch_definition'])
+        globals_dict["logger"].debug(f"Generating 1 random operator of type {operator_type}.")
+        generate_operator_type(globals_dict, file_path, operator_type, 1, order)
+        random_definition_num -= 1
+    globals_dict["op_manager"].save_operators_to_jsonl(file_path)
+
+
+def generate_raise_order_operators(globals_dict: Dict[str, Any], file_path: str, num: int, order: int):
+    globals_dict["logger"].debug(f"Generating {num} recursive definitions.")
+    generate_operator_type(globals_dict, file_path, 'recursive_definition', num, order)
+    globals_dict["op_manager"].save_operators_to_jsonl(file_path)
+    
+     
+if __name__ == "__main__":
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Initialize and run the operator manager with custom configuration paths.")
+    parser.add_argument('--config', type=str, default='config/generate_operator.yaml', help='Path to the config file')
+    parser.add_argument('--initial-operators-path', type=str, default="data/initial.jsonl", help='Path to the initial operator JSONL file')
+    parser.add_argument('--generated-operators-path', type=str, default="data/final.jsonl", help='Path where the final results should be saved')
+    parser.add_argument('--cython-cache-dir', type=str, default="./compiled_funcs", help='Path to the Cython cache directory')
+    parser.add_argument('--mode', type=str, choices=['raise', 'expand'], default='expand', help="Mode for operator generation: 'raise' for exponentiation, 'expand' for expansion")
+    parser.add_argument('--num', type=int, default=5, help='Number of operators to generate')
+    parser.add_argument('--n_order', type=int, default=1, help='Order of operators to generate')
+    
+    # Parse arguments
+    args = parser.parse_args()
+    
+    # Print debugging information
+    print("==================================================")
+    print("Starting the operator generation process...")
+    print(f"Config Path: {args.config}")
+    print(f"Initial Operators Path: {args.initial_operators_path}")
+    print(f"Generated Operators Path: {args.generated_operators_path}")
+    print(f"Cython Cache Directory: {args.cython_cache_dir}")
+    print(f"Mode to Generate: {args.mode}")
+    print(f"Number of Operators to Generate: {args.num}")
+    print(f"Order of Operators to Generate: {args.n_order}")
+    
+    # Initialize global objects
+    globals_dict = initialize_globals(config_path=args.config, initial_operators_path=args.initial_operators_path, cython_cache_dir=args.cython_cache_dir)
+
+    if args.mode == 'raise':
+        generate_raise_order_operators(globals_dict, args.generated_operators_path, args.num, args.n_order)
+    else:
+        generate_randop(globals_dict, args.generated_operators_path, args.num, args.n_order)
+
+
+
+
+
+
 
 
 

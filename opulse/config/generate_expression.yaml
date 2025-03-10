@@ -1,10 +1,9 @@
-#logging
 logging:
   level: INFO  # or DEBUG, WARNING, ERROR, CRITICAL
   log_dir: "logs"  # Log directory
   log_file: "data.log"  # Log file name
+  save_file: true
 
-#numeric representation
 max_base: 16
 custom_digits : "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -12,15 +11,16 @@ other_symbols_atoms:
   left_parenthesis: "(" 
   right_parenthesis: ")"
   equals_sign: "="
-  nan_symbol: "NaN"  # 表示无解
-  inf_symbol: "Inf"  # 表示无穷大
-  neg_inf_symbol: "-Inf"  # 表示负无穷大
+  nan_symbol: "NaN"  
+  inf_symbol: "Inf"  
+  neg_inf_symbol: "-Inf"  
 
-# 表达式生成
-expr_variables: "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z"
+expr_variables:
+  - a
+  - b
 expr_numeric_range: 
   max_value: 1000
-  min_value: 0 #不用负数，是因为其实一元符号里面有负数
+  min_value: 0 
 expr_max_depth: 3
 expr_type_weights: 
   binary: 0.7

@@ -112,11 +112,6 @@ def update_symbols_in_jsonl(input_jsonl_file: str, output_jsonl_file: str, valid
         print(f"Error while reading the file: {e}")
 
 def read_jsonl_file(jsonl_file_path):
-    """
-    读取 JSONL 文件并返回全部数据，使用 func_id 作为键。
-    :param jsonl_file_path: JSONL 文件的路径
-    :return: 以 func_id 为键，解析后的 JSON 数据为值的字典
-    """
     data_dict = {}  # 用于存储以 func_id 为键的解析后 JSON 数据
     try:
         with open(jsonl_file_path, 'r', encoding='utf-8') as file:

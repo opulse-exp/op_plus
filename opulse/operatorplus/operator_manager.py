@@ -6,38 +6,34 @@ import json
 from lark.tree import Tree
 import re
 import os
+import numpy as np
 from config.constants import thres, special_values
-import inspect
 import cython
-import uuid
 from operatorplus.compiler import CythonCompiler
-import concurrent.futures
-import ctypes
-import glob
-import os
-from concurrent.futures import ProcessPoolExecutor
-from tqdm import tqdm  # 导入 tqdm 库
-import ctypes
-import glob
-import os
-from concurrent.futures import ProcessPoolExecutor
-from tqdm import tqdm  # 导入 tqdm 库
 
 
-##!将id全部改为func_id，也就是说在
-
-def exponential_decay(n_order, decay_rate=0.2, max_weight=1.0, min_weight=0.05):
-    weight = max_weight * np.exp(-decay_rate * n_order)
-    return max(weight, min_weight)
+# def exponential_decay(n_order, decay_rate=0.2, max_weight=1.0, min_weight=0.05):
+#     weight = max_weight * np.exp(-decay_rate * n_order)
+#     return max(weight, min_weight)
 
 class OperatorManager:
     def __init__(self, config_file: str, param_config: ParamConfig, logger: LogConfig, cython_cache_dir: str, compiler: CythonCompiler, load_compile: True):
+        """
+        Initializes the OperatorManager with configuration details and sets up internal data structures.
+        
+        Parameters:
+            config_file (str): Path to the JSONL file containing operator definitions.
+            param_config (ParamConfig): Configuration object containing necessary settings.
+            logger (LogConfig): Logger configuration object for logging.
+            cython_cache_dir (str): Directory to store compiled Cython modules.
+            compiler (CythonCompiler): Compiler object for compiling operator functions.
+            load_compile (bool): Whether to compile operators during loading.
+        """
+        
         self.config_file = config_file
         self.param_config = param_config
         self.logger = logger.get_logger()
-        #这里可以传入编译文件的路径
         self.compiler = compiler
-        #改成用uuid为索引
         self.operators: Dict[str, OperatorInfo] = (
             {}
         )  # key: operator id, value: OperatorInfo
@@ -47,17 +43,13 @@ class OperatorManager:
         self.base_operators: Dict[int, List[OperatorInfo]] = defaultdict(list)
         # key: is_base, value: list of OperatorInfo
 
-        ##!其实你应该在这里存储这个可用函数的调用的列表
-        self.available_funcs: Dict[str, Any] = {}  # to store available functions
-        self.available_funcs_str = f"thres = {2**31 - 1}\n\n"
+        # self.available_funcs: Dict[str, Any] = {}  # to store available functions
+        # self.available_funcs_str = f"thres = {2**31 - 1}\n\n"
         # self.max_workers = max_workers
         self.load_compile = load_compile
         self.cython_cache_dir = cython_cache_dir
         self.load_operators()
-        self.temp_file_path = "data/operator/temp_operators.temp"  # Temporary file path
-        self.operator_fun_path = "operatorplus/op_func.py" 
-        
-        
+
     def load_operators(self):
         """
         Loads operator definitions from a JSONL file.
@@ -76,7 +68,6 @@ class OperatorManager:
             f"Loading operators from configuration file: {self.config_file}"
         )
         
-          
         with open(self.config_file, "r", encoding="utf-8") as f:
             line_count = 0
             for line in f:
@@ -92,7 +83,7 @@ class OperatorManager:
                         if os.path.exists(full_path):
                             operator.module = self.compiler.import_module_from_path(f"module_{operator.func_id}")
                         else:    
-                            func_code_str = f"thres = {2**31 - 1}\n\n"#添加thres变量的值和限制
+                            func_code_str = f"thres = {2**31 - 1}\n\n"#Add the value and limit of the thres variable.
                             func_code_str += f"# Operator Func ID: {operator.func_id} - op_compute_func\n"
                             func_code_str += f"{operator.op_compute_func}\n\n"
                             func_code_str += f"# Operator Func ID: {operator.func_id} - op_count_func\n"
@@ -108,7 +99,7 @@ class OperatorManager:
                         self.base_operators[operator.is_base].append(operator)
 
                     # self._update_available_funcs(operator)
-                    self.logger.debug(
+                    self.logger.info(
                         f"Loaded operator {operator.id} ({operator.symbol}) from line {line_count}."
                     )
 
@@ -120,77 +111,15 @@ class OperatorManager:
         self.logger.info(
             f"Successfully loaded {len(self.operators)} operators from the configuration file."
         )
-
-    # def update_avaliable_func_str(self):
-    #     self.available_funcs_str = f"thres = {2**31 - 1}\n\n"
-    #     for op_id, operator_info in self.operators.items():
-    #         # Ensure both op_compute_func and op_count_func exist
-    #         if hasattr(operator_info, 'op_compute_func') and hasattr(operator_info, 'op_count_func'):
-    #             # Write the op_compute_func (as string)
-    #             op_compute_func_str = operator_info.op_compute_func
-    #             self.available_funcs_str+=f"# Operator ID: {op_id} - op_compute_func\n"
-    #             self.available_funcs_str+=f"{op_compute_func_str}\n\n"
-                
-    #             # Write the op_count_func (as string)
-    #             op_count_func_str = operator_info.op_count_func
-    #             self.available_funcs_str+=f"# Operator ID: {op_id} - op_count_func\n"
-    #             self.available_funcs_str+=f"{op_count_func_str}\n\n"
-    #!要改成调用对应的一些已经编译好的模块
-    
-    # def _process_line(self, line: str, line_count: int) -> None:
-    #     """
-    #     Helper function to process a single line of the configuration file.
-    #     """
-    #     if not line.strip():
-    #         self.logger.debug(f"Skipping empty line {line_count}.")
-    #         return None
-
-    #     try:
-    #         operator = OperatorInfo.from_json(line)
-    #         if self.load_compile:
-    #             func_code_str = f"thres = {2**31 - 1}\n\n"  # 添加thres变量的值和限制
-    #             func_code_str += f"# Operator Func ID: {operator.func_id} - op_compute_func\n"
-    #             func_code_str += f"{operator.op_compute_func}\n\n"
-    #             func_code_str += f"# Operator Func ID: {operator.func_id} - op_count_func\n"
-    #             func_code_str += f"{operator.op_count_func}\n\n"
-    #             self.compiler.compile_function(func_code_str, operator.func_id, deps=None)
-
-    #         self.logger.debug(f"Loaded operator {operator.id} ({operator.symbol}) from line {line_count}.")
-    #         return operator
-
-    #     except Exception as e:
-    #         self.logger.warning(f"Failed to parse operator from line {line_count}: {e}")
-    #         return None
-
-    # def load_operators(self):
-    #     """
-    #     Loads operator definitions from a JSONL file using concurrent processing.
-    #     """
-    #     self.logger.info(f"Loading operators from configuration file: {self.config_file}")
-
-    #     # Read all lines from the configuration file
-    #     with open(self.config_file, "r", encoding="utf-8") as f:
-    #         lines = f.readlines()
-
-    #     # Use ProcessPoolExecutor to process lines concurrently
-    #     with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_workers) as executor:
-    #         futures = [executor.submit(self._process_line, line, line_count + 1) for line_count, line in enumerate(lines)]
-
-    #         # Collect results
-    #         for future in concurrent.futures.as_completed(futures):
-    #             try:
-    #                 operator = future.result()
-    #                 self.operators[operator.func_id] = operator
-    #                 self.symbol_to_operators[operator.symbol].append(operator)
-    #                 if operator.is_base:
-    #                     self.base_operators[operator.is_base].append(operator)
-    #             except Exception as e:
-    #                 self.logger.error(f"Error processing operator: {e}")
-
-    #     self.logger.info(f"Successfully loaded {len(self.operators)} operators from the configuration file.")
         
-    def save_op_funcs_to_file(self):
-        with open("/map-vepfs/kaijing/exp_mechanicalinterpretability/Opulse/opulse/operatorplus/op_func.pyx", "w") as file:
+    def save_op_funcs_to_file(self, file_path:str):
+        """
+        Saves all operator functions to a `.pyx` file for compilation.
+        
+        This method writes the compute and count functions of all operators to a `.pyx` file,
+        ensuring that they can be compiled later.
+        """
+        with open(file_path, "w") as file:
             # Write the necessary imports and initializations at the start of the file
             file.write(f"thres = {2**31 - 1}\n\n")
             
@@ -213,12 +142,12 @@ class OperatorManager:
     def save_operators_to_jsonl(self, file_path: str):
         """
         Saves all operators to a JSONL file.
-
+        
         This method serializes each operator in `self.operators` and writes it to the specified file path in JSONL format.
-
-        Args:
+        
+        Parameters:
             file_path (str): The path to the file where the operators should be saved.
-
+        
         Logs the process of saving operators to the file.
         """
         self.logger.info(f"Saving operators to {file_path}.")
@@ -227,7 +156,7 @@ class OperatorManager:
             for operator in self.operators.values():
                 json_line = operator.to_json()
                 file.write(json_line + "\n")
-                file.flush()  # 强制刷新缓冲区
+                file.flush()  
                 self.logger.debug(
                     f"Saved operator {operator.id} ({operator.symbol}) to {file_path}."
                 )
@@ -235,115 +164,19 @@ class OperatorManager:
         self.logger.info(f"Successfully saved all operators to {file_path}.")
         
 
-    def save_operator_to_temp(self, operator):
-        """
-        Saves a single operator to a temporary file.
-
-        This method serializes the given operator and appends it to a temporary file defined in `self.temp_file_path`.
-
-        Args:
-            operator (OperatorInfo): The operator to be saved.
-
-        Logs the process of saving the operator to the temporary file.
-        """
-        self.logger.info(
-            f"Saving operator {operator.id} ({operator.symbol}) to temporary file."
-        )
-
-        with open(self.temp_file_path, "a", encoding="utf-8") as temp_file:
-            json_line = operator.to_json()
-            temp_file.write(json_line + "\n")
-            self.logger.debug(
-                f"Operator {operator.id} ({operator.symbol}) saved to temporary file."
-            )
-
-    def clear_temp_file(self):
-        """
-        Clears the temporary file by removing it if it exists.
-
-        This method checks if the temporary file exists and removes it. If the file doesn't exist, a warning is logged.
-        In case of any error during file removal, an error log is generated.
-
-        Logs the status of the file clearance operation.
-        """
-        try:
-            if os.path.exists(self.temp_file_path):
-                os.remove(self.temp_file_path)
-                self.logger.info(f"Temporary file {self.temp_file_path} cleared.")
-            else:
-                self.logger.warning(
-                    f"Temporary file {self.temp_file_path} does not exist."
-                )
-        except Exception as e:
-            self.logger.error(f"Error clearing temporary file: {e}")
-
-    def rename_temp_to_jsonl(self, file_path: str):
-        """Renames the temporary file to the specified file_path."""
-        # Ensure the temporary file exists at self.temp_file_path
-        if os.path.exists(self.temp_file_path):
-            # If the destination file doesn't exist, create it
-            if not os.path.exists(file_path):
-                # Create an empty file at the destination path
-                open(file_path, "w", encoding="utf-8").close()
-
-            try:
-                # Now, rename the temporary file to the specified file_path
-                os.rename(self.temp_file_path, file_path)
-                self.logger.info(
-                    f"Renamed temporary file {self.temp_file_path} to {file_path}"
-                )
-            except OSError as e:
-                self.logger.error(
-                    f"Error renaming file {self.temp_file_path} to {file_path}: {e}"
-                )
-        else:
-            self.logger.warning(f"Temporary file not found: {self.temp_file_path}")
-
-    #!函数_id改了的话，可能这里需要大改一下
-    def _update_available_funcs(self, operator: OperatorInfo):
-        """
-        Update available_funcs with the compute and count functions of the given operator.
-        """ 
-        # if operator.op_compute_func:
-        #     self.available_funcs[f"op_{operator.id}"] = operator.get_compute_function(
-        #         self.available_funcs
-        #     )
-        # if operator.op_count_func:
-        #     self.available_funcs[f"op_count_{operator.id}"] = (
-        #         operator.get_count_function(self.available_funcs)
-        #     )
-        
-        if operator.op_compute_func:
-            self.available_funcs[f"op_{operator.func_id}"] = self.get_compute_function(operator.func_id)
-        if operator.op_count_func:
-            self.available_funcs[f"op_count_{operator.func_id}"] = self.get_count_function(operator.func_id)
-
-
-    def get_available_funcs(self) -> Dict[str, Any]:
-        """
-        Returns the available functions (compute and count functions).
-        """
-        return self.available_funcs
-
-    # def add_available_funcs(self, operator: OperatorInfo):
-    #     """
-    #     Updates the available functions whenever a new operator is added.
-    #     """
-    #     self._update_available_funcs(operator)
-    #     self.save_op_funcs_to_file()
-
-
-    # def get_operator_by_id(self, op_id: int) -> OperatorInfo:
-    #     if op_id not in self.operators:
-    #         self.logger.error(f"Operator ID {op_id} does not exist.")
-    #         raise ValueError(f"Operator ID {op_id} does not exist.")
-
-    #     self.logger.debug(f"Operator ID {op_id} found.")
-    #     return self.operators[op_id]
-    
-    #!通过func_id来获取当前的operator
     def get_operator_by_func_id(self, op_func_id: str) -> OperatorInfo:
+        """
+        Retrieves an operator by its function ID.
         
+        Parameters:
+            op_func_id (str): The function ID of the operator.
+        
+        Returns:
+            OperatorInfo: The operator corresponding to the given function ID.
+        
+        Raises:
+            ValueError: If no operator with the given function ID exists.
+        """
         self.logger.debug(f"Fetching operator with func ID {op_func_id}.")
 
         if op_func_id not in self.operators:
@@ -506,18 +339,17 @@ class OperatorManager:
     def extract_op_dependencies(self, operator:OperatorInfo):
         """
         Extracts dependencies of a given operator by analyzing its compute function.
-
+        
         This method uses a regular expression to match operator IDs in the `op_compute_func`
         field of the operator and identifies any dependencies (operators that the current
         operator relies on).
 
         Parameters:
-            op_func_id (str): The ID of the operator whose dependencies need to be extracted.
+            operator (OperatorInfo): The operator whose dependencies need to be extracted.
 
         Updates:
             - The `dependencies` attribute of the operator is updated to a list of dependent operator IDs.
         """
-
         # Regular expression pattern to match operator dependencies (e.g., op_1, op_2, etc.)
         op_pattern = r"op_(\w+)\("
 
@@ -537,18 +369,13 @@ class OperatorManager:
     def calculate_order(self, operator:OperatorInfo):
         """
         Calculates the order (n_order) of a specific operator based on its dependencies.
-
-        The order of an operator is determined by its dependencies' orders:
-        - For recursive definitions: max order of dependencies + 1.
-        - For non-recursive definitions: max order of dependencies.
-
-        If no dependencies exist, the order is set to 1.
-
+        
         Parameters:
-            operator_id (int): The ID of the operator whose order is to be calculated.
+            operator (OperatorInfo): The operator whose order needs to be calculated.
+        
+        Updates:
+            - The `n_order` attribute of the operator is updated based on its dependencies.
         """
-
-
         # If the operator has dependencies, calculate its order based on them
         if operator.dependencies:
             # Get the n_order values of all dependencies
@@ -593,7 +420,7 @@ class OperatorManager:
         to the provided new status.
 
         Parameters:
-            operator_id (int): The ID of the operator to update.
+            op_func_id (int): The ID of the operator to update.
             new_status (bool): The new 'is_temporary' status to set for the operator.
 
         Returns:
@@ -618,70 +445,15 @@ class OperatorManager:
         self.logger.error(f"Operator with ID {op_func_id} not found. Update failed.")
         return False  # Operator not found
 
-    # def add_operator(self, operator_data: Dict[str, Any]):
-    #     """
-    #     Dynamically adds a new operator to the system.
-
-    #     This method assigns a new operator ID (if not provided), ensures that
-    #     the operator's `n_order` is set to `None` for later processing, and
-    #     adds the operator to the internal storage.
-
-    #     Parameters:
-    #         operator_data (Dict[str, Any]): A dictionary containing the operator's details,
-    #                                          such as 'symbol', 'id', and other relevant properties.
-
-    #     Returns:
-    #         OperatorInfo: The newly created operator object.
-    #     """
-    #     self.logger.debug(
-    #         "Attempting to add a new operator with data: %s", operator_data
-    #     )
-
-    #     new_func_id = operator_data["func_id"]
-    #     if new_func_id in self.operators:
-    #         self.logger.error(f"Operator ID {new_func_id} already exists.")
-    #         raise ValueError(f"Operator ID {new_func_id} already exists.")
-
-
-    #     # Create the new operator
-    #     new_operator = OperatorInfo(**operator_data)
-
-    #     # Add the operator to the operators dictionary
-    #     self.operators[new_operator.func_id] = new_operator
-
-    #     # Map the operator to its symbol in the symbol_to_operators dictionary
-    #     if new_operator.symbol not in self.symbol_to_operators:
-    #         self.symbol_to_operators[new_operator.symbol] = []
-    #     self.symbol_to_operators[new_operator.symbol].append(new_operator)
-    #     self.logger.debug(
-    #         f"Operator {new_operator.symbol} (ID: {new_operator.id}) added to symbol_to_operators."
-    #     )
-
-    #     # Add the operator to the base_operators dictionary based on its base type
-    #     if new_operator.is_base is not None:
-    #         if new_operator.is_base not in self.base_operators:
-    #             self.base_operators[new_operator.is_base] = []
-    #         self.base_operators[new_operator.is_base].append(new_operator)
-    #         self.logger.debug(
-    #             f"Operator {new_operator.symbol} (ID: {new_operator.id}) added to base_operators."
-    #         )
-
-    #     return new_operator
-
     def add_operator(self, operator: OperatorInfo):
         """
         Dynamically adds a new operator to the system.
-
-        This method assigns a new operator ID (if not provided), ensures that
-        the operator's `n_order` is set to `None` for later processing, and
-        adds the operator to the internal storage.
-
+        
         Parameters:
-            operator_data (Dict[str, Any]): A dictionary containing the operator's details,
-                                             such as 'symbol', 'id', and other relevant properties.
-
-        Returns:
-            OperatorInfo: The newly created operator object.
+            operator (OperatorInfo): The operator to be added.
+        
+        Raises:
+            ValueError: If an operator with the same function ID already exists.
         """
 
         if operator.func_id in self.operators:
@@ -718,7 +490,7 @@ class OperatorManager:
         (both `self.operators` and `self.symbol_to_operators`) accordingly.
 
         Parameters:
-            op_id (int): The ID of the operator to be removed.
+            op_func_id (int): The ID of the operator to be removed.
 
         Raises:
             ValueError: If the operator ID does not exist in the system.
@@ -731,8 +503,6 @@ class OperatorManager:
 
         # Retrieve and remove the operator from the operators dictionary
         operator = self.operators.pop(op_func_id)
-        self.available_funcs.pop(f"op_{operator.func_id}", None)
-        self.available_funcs.pop(f"op_count_{operator.func_id}", None)
         self.logger.info(f"Removed operator {operator.symbol} (ID: {op_func_id}).")
 
         # Remove the operator from the symbol_to_operators mapping
@@ -751,7 +521,7 @@ class OperatorManager:
         are provided before updating the operator in the internal storage.
 
         Parameters:
-            op_id (int): The ID of the operator to be updated.
+            op_func_id (int): The ID of the operator to be updated.
             updated_data (dict): A dictionary containing the updated data for the operator.
 
         Raises:
@@ -796,7 +566,7 @@ class OperatorManager:
         Afterward, reassign IDs for the remaining operators.
 
         Parameters:
-            op_id (int): The ID of the operator to be deleted.
+            op_func_id (int): The ID of the operator to be deleted.
         """
         self.logger.debug("Attempting to delete operator with ID: %s", op_func_id)
 
@@ -855,7 +625,7 @@ class OperatorManager:
         Recursively delete an operator and its dependencies.
 
         Parameters:
-            op_id (int): The ID of the operator to be deleted.
+            op_func_id (int): The ID of the operator to be deleted.
 
         Raises:
             ValueError: If the operator with the given ID does not exist.
@@ -889,7 +659,7 @@ class OperatorManager:
         Helper function to recursively find all dependent operators that should be deleted.
 
         Parameters:
-            op_id (int): The ID of the operator whose dependencies should be found.
+            op_func_id (int): The ID of the operator whose dependencies should be found.
             to_delete_ids (set): A set that stores all operator IDs that should be deleted.
         """
         # If this operator has already been marked for deletion, return early
@@ -903,53 +673,3 @@ class OperatorManager:
         for operator in self.operators.values():
             if op_func_id in operator.dependencies:
                 self._find_all_dependent_operator_ids(operator.func_id, to_delete_ids)
-
-    # def get_compute_function(
-    #     self, op_id:int
-    # ) -> Optional[Any]:
-    #     return self._compile_function(f"op_{op_id}")
-
-    # def get_count_function(
-    #     self, op_id:int
-    # ) -> Optional[Any]:
-    #     """
-    #     Retrieves the count function for the operator, compiling it if necessary, and handling dependencies.
-
-    #     Args:
-    #         available_funcs (Dict[str, Any], optional): A dictionary of available functions that can be used by the operator's function.
-
-    #     Returns:
-    #         Optional[Any]: The compiled function object or None if it cannot be compiled.
-    #     """
-    #     return self._compile_function(f"op_count_{op_id}")
-     
-    # def _compile_function(
-    #     self, func_name: str
-    # ) -> Optional[Any]:
-
-    #     if func_name in self.available_funcs:
-    #         return self.available_funcs[func_name]
-    #     self.update_avaliable_func_str()
-    #     try:
-    #         # Create a local namespace and add available functions
-    #         local_namespace = {}
-    #         # Add thres and special_values to the local namespace
-    #         local_namespace["thres"] = thres
-    #         # local_namespace['special_values'] = special_values
-
-            
-    #         # # Execute the function code in the local namespace to compile the function
-    #         # exec(func_code, local_namespace, local_namespace)
-    #         local_namespace = cython.inline(self.available_funcs_str, local_namespace=local_namespace)
-    #         compiled_func = local_namespace.get(func_name, None)
-            
-    #         if compiled_func:
-    #             self.available_funcs[func_name] = compiled_func
-    #             return compiled_func
-    #         else:
-    #             return None
-    #     except Exception as e:
-    #         print(
-    #             f"Error compiling function '{func_name}' for operator: {e}"
-    #         )
-    #         return None
