@@ -32,8 +32,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="assets/images/logo.png" alt="Logo" width="250" height="250">
+  <a href="https://opulse-exp.github.io/op_plus/">
+    <img src="docs/assets/images/logo.png" alt="Logo" width="250" height="250">
   </a>
 
   <h3 align="center">Opulse</h3>
@@ -41,7 +41,7 @@
   <p align="center">
     Opulse is a dynamic operator generation system designed to create and manage mathematical operators, with 'pulse' reflecting its dynamic and impactful nature in the creation process!
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://opulse-exp.github.io/op_plus/"><strong>Explore the docs »</strong></a>
   </p>
 </div>
 
