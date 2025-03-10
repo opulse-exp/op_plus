@@ -18,7 +18,7 @@ python generate_operator_type.py \
     --num <num> \
     --n_order <n_order>
 ```
-#### Command-Line Arguments:
+Command-Line Arguments:
 
 - `--config`: The path to the configuration YAML file for operator generation.
 - `--initial-operators-path`: The path to the initial operator JSONL file.
@@ -53,7 +53,7 @@ python generate_operator_multiprocess.py \
     --continue-mode <continue_mode>
 
 ```
-#### Command-Line Arguments:
+Command-Line Arguments:
 
 - `--config`: The path to the configuration YAML file for operator generation.
 - `--initial-operators-path`: The path to the initial operator JSONL file.
@@ -66,7 +66,8 @@ python generate_operator_multiprocess.py \
 - `--increase-count`: This argument specifies the number of operators to add after the raise-order point is reached. The default value is `3`.
 - `--continue-mode`: This argument specifies whether to continue the generation process from the last checkpoint (`True`) or start a fresh generation process (`False`). The default value is `True`.
 
-#### Bash Script for Convenience
+Bash Script for Convenience；
+
 To facilitate the execution process, a bash script is provided that can be run with modified parameters.
 
 ```bash
@@ -89,7 +90,7 @@ python assign_operator_priority.py \
     --cython-cache-dir <cython_cache_directory>
 ```
 
-#### Command-Line Arguments:
+Command-Line Arguments:
 
 - `--config`: The path to the configuration YAML file for operator generation.
 - `--operator-file`: Defines the path to the input JSONL file containing the initial operator data. This argument is required.  
@@ -113,7 +114,7 @@ python generate_base_operator.py \
     --cython-cache-dir <cython_cache_directory>
 ```
 
-#### Command-Line Arguments:
+Command-Line Arguments:
 
 - `--config`: Specifies the path to the configuration file that defines the operator generation rules.
 - `--max_base`:Defines the maximum base value for numeral systems in the generated operators.

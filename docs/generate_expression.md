@@ -19,7 +19,7 @@ python generate_expression_single.py \
     --func_id <func_id> \
     --base <base>
 ```
-#### Command-Line Arguments:
+Command-Line Arguments:
 
 - `--config`: The path to the configuration file for the expression generation process.
 - `--cython-cache-dir`: The directory where the Cython cache is stored.
@@ -30,7 +30,8 @@ python generate_expression_single.py \
 - `--func_id`: The function ID for expression generation. Use `"all"` to generate expressions for all operators.
 - `--base`: The numerical base for expression generation (e.g., 10 for decimal, 2 for binary).
 
-#### Bash Script for Convenience
+Bash Script for Convenience:
+
 To facilitate the execution process, a bash script is provided that can be run with modified parameters.
 
 ```bash
@@ -58,7 +59,7 @@ python generate_expression_combination.py \
     --depth <depth>
 ```
 
-#### Command-Line Arguments:
+Command-Line Arguments:
 
 - `--config`: The path to the configuration file for the expression generation process.
 - `--cython-cache-dir`: The directory where the Cython cache is stored.
@@ -71,7 +72,8 @@ python generate_expression_combination.py \
 - `--depth`: The depth of the expressions to generate (default: 2). Higher depth means more complex expressions.
 
 
-#### Bash Script for Convenience
+Bash Script for Convenience:
+
 To facilitate the execution process, a bash script is provided that can be run with modified parameters.
 
 ```bash
