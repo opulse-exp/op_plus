@@ -182,15 +182,15 @@ tar -xzvf operator_funcs_so.tar.gz
 
 For detailed usage and configurations, refer to the following documents:
 
-- [Generate Operator Config](config/generate_operator.md)
-- [Generate Operator Progess](generate_operator.md)
+- [Generate Operator Config](docs/config/generate_operator.md)
+- [Generate Operator Progess](docs/generate_operator.md)
 
 ### generate expression
 
 For detailed usage and configurations, refer to the following documents:
 
-- [Generate Expression Config](config/generate_expression.md)
-- [Generate Expression Progess](generate_expression.md)
+- [Generate Expression Config](docs/config/generate_expression.md)
+- [Generate Expression Progess](docs/generate_expression.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
