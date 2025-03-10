@@ -1,0 +1,26 @@
+/* 调整 Logo 的大小 */
+.md-header-nav .md-logo img {
+    width: 200px;   /* 设置 logo 宽度为 200px，可以根据需求调整 */
+    height: auto;   /* 保持 logo 高度的自动调整 */
+}
+
+/* 修改 logo 的颜色 (logo 是图片，无法直接修改颜色，若为 SVG 图像，可以修改颜色) */
+
+/* 如果你的 logo 是 SVG 格式，下面的代码可以改变 SVG 图标的颜色 */
+.md-header-nav .md-logo svg {
+    fill: black;    /* 将 logo 填充颜色设为黑色 */
+}
+
+/* 调整导航栏的宽度 */
+.md-header-nav {
+    max-width: 100%;  /* 确保导航栏宽度为100% */
+    padding: 0 10px;  /* 调整导航栏两边的内边距 */
+}
+
+.md-header-nav .md-nav__link {
+    color: white;  /* 设置导航链接的字体颜色为白色 */
+}
+
+.md-header-nav .md-nav__link:hover {
+    color: black;  /* 设置导航链接在 hover 时的颜色 */
+}

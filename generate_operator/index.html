@@ -1,0 +1,1408 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Custom Operator Generation System">
+      
+      
+      
+      
+        <link rel="prev" href="../expression/expression_evaluator/">
+      
+      
+        <link rel="next" href="../generate_expression/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Operator Generate - Opulse</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#operator-generate-process" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Opulse" class="md-header__button md-logo" aria-label="Opulse" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Opulse
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Operator Generate
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/opulse-exp/op_plus.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Opulse
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Opulse" class="md-nav__button md-logo" aria-label="Opulse" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="logo">
+
+    </a>
+    Opulse
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/opulse-exp/op_plus.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Opulse
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Config
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Config
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/generate_operator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operator Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/generate_expression/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Expression Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CoreAPI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            CoreAPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operatorplus
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Operatorplus
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_info/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorInfo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/condition_generator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ConditionGenerator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_generator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorGenerator.md
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_manager/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorManager.md
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_definition_parser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorDefinitionParser.md
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_transformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorTransformer.md
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/compiler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CythonCompiler
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_priority_manager/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorPriorityManager
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operatorplus/operator_dependency_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OperatorDependencyGraph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Expression
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Expression
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../expression/expression_node/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ExpressionNode
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../expression/expression_generator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ExpressionGenerator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../expression/base_converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BaseConverter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../expression/expression_base_converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ExpressionBaseConverter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../expression/expression_evaluator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ExpressionEvaluator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Generate
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Generate
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Operator Generate
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Operator Generate
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generate_operator_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_operator_type
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="generate_operator_type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_operator_multiprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_operator_multiprocess
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="generate_operator_multiprocess">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bash-script-for-convenience" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bash Script for Convenience
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign_operator_priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      assign_operator_priority
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="assign_operator_priority">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_base_operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_base_operator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="generate_base_operator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Run
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#op_func_transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      op_func_transform
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generate_expression/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Expression Generate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generate_operator_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_operator_type
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="generate_operator_type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_operator_multiprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_operator_multiprocess
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="generate_operator_multiprocess">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bash-script-for-convenience" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bash Script for Convenience
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign_operator_priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      assign_operator_priority
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="assign_operator_priority">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_base_operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_base_operator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="generate_base_operator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Run
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-arguments_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command-Line Arguments:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#op_func_transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      op_func_transform
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="operator-generate-process">Operator Generate Process</h1>
+<h2 id="generate_operator_type">generate_operator_type</h2>
+<p>Generate an operator of a certain order and a certain type of definition.</p>
+<h3 id="how-to-use">How to Use</h3>
+<p>To run the script, execute the following command with the desired parameters:</p>
+<pre><code class="language-bash">python generate_operator_type.py \
+    --config &lt;config_path&gt; \
+    --initial-operators-path &lt;initial_operators_path&gt; \
+    --generated-operators-path &lt;generated_operators_path&gt; \
+    --cython-cache-dir &lt;cython_cache_dir&gt; \
+    --mode &lt;mode&gt; \
+    --num &lt;num&gt; \
+    --n_order &lt;n_order&gt;
+</code></pre>
+<h4 id="command-line-arguments">Command-Line Arguments:</h4>
+<ul>
+<li><code>--config</code>: The path to the configuration YAML file for operator generation.</li>
+<li><code>--initial-operators-path</code>: The path to the initial operator JSONL file.</li>
+<li><code>--generated-operators-path</code>: The path where the generated operators will be saved.</li>
+<li><code>--cython-cache-dir</code>: The directory where Cython compiled functions will be cached.</li>
+<li><code>--mode</code>: The mode for operator generation. Choose between:</li>
+<li><code>raise</code>: Generate operators for the <strong>raise</strong> mode (e.g., exponentiation-like operations, which represent higher-order relationships).</li>
+<li><code>expand</code>: Generate operators for the <strong>expand</strong> mode (e.g., expansion operations like polynomial expansion or algebraic transformations).</li>
+<li><code>--num</code>: The number of operators to generate.</li>
+<li><code>--n_order</code>: The order of the operators to generate.</li>
+</ul>
+<h2 id="generate_operator_multiprocess">generate_operator_multiprocess</h2>
+<p>Generate operators at a large scale using multiprocessing.</p>
+<h3 id="how-to-use_1">How to Use</h3>
+<p>To run the script, execute the following command with the desired parameters:</p>
+<pre><code class="language-bash">python generate_operator_multiprocess.py \
+    --config &lt;config_path&gt; \
+    --initial-operators-path &lt;initial_operators_path&gt; \
+    --generated-operators-path &lt;generated_operators_path&gt; \
+    --cython-cache-dir &lt;cython_cache_dir&gt; \
+    --num &lt;num&gt; \
+    --max-workers &lt;max_workers&gt; \
+    --ratio &lt;ratio&gt; \
+    --raise-increase-at-order &lt;raise_increase_at_order&gt; \
+    --increase-count &lt;increase_count&gt; \
+    --continue-mode &lt;continue_mode&gt;
+
+</code></pre>
+<h4 id="command-line-arguments_1">Command-Line Arguments:</h4>
+<ul>
+<li><code>--config</code>: The path to the configuration YAML file for operator generation.</li>
+<li><code>--initial-operators-path</code>: The path to the initial operator JSONL file.</li>
+<li><code>--generated-operators-path</code>: The path where the generated operators will be saved.</li>
+<li><code>--cython-cache-dir</code>: The directory where Cython compiled functions will be cached.</li>
+<li><code>--num</code>: The number of operators to generate.</li>
+<li><code>--max-workers</code>: This argument specifies the maximum number of worker processes for parallel execution. </li>
+<li><code>--ratio</code>: This argument specifies the ratio of each layer compared to the previous one, which is useful for expanding operators. The default value is <code>0.6</code>.</li>
+<li><code>--raise-increase-at-order</code>: At which order the recursive definition starts generating higher-order operators.. The default value is <code>3</code>.</li>
+<li><code>--increase-count</code>: This argument specifies the number of operators to add after the raise-order point is reached. The default value is <code>3</code>.</li>
+<li><code>--continue-mode</code>: This argument specifies whether to continue the generation process from the last checkpoint (<code>True</code>) or start a fresh generation process (<code>False</code>). The default value is <code>True</code>.</li>
+</ul>
+<h4 id="bash-script-for-convenience">Bash Script for Convenience</h4>
+<p>To facilitate the execution process, a bash script is provided that can be run with modified parameters.</p>
+<pre><code class="language-bash">nohup bash run_generate_operator_multiprocess.sh &gt; output.log 2&gt;&amp;1 &amp;
+</code></pre>
+<h2 id="assign_operator_priority">assign_operator_priority</h2>
+<p>Assign priority and associativity after the operator data generation completes.</p>
+<h4 id="how-to-run">How to Run</h4>
+<p>To run the script, execute the following command with the desired parameters:</p>
+<pre><code class="language-bash">python assign_operator_priority.py \
+    --config &lt;config_path&gt; \
+    --operator-file &lt;operator_input_path&gt; \
+    --output-operator-file &lt;output_operator_path&gt; \
+    --cython-cache-dir &lt;cython_cache_directory&gt;
+</code></pre>
+<h4 id="command-line-arguments_2">Command-Line Arguments:</h4>
+<ul>
+<li><code>--config</code>: The path to the configuration YAML file for operator generation.</li>
+<li><code>--operator-file</code>: Defines the path to the input JSONL file containing the initial operator data. This argument is required.  </li>
+<li><code>--output-operator-file</code>: Determines the output path where the generated operators will be stored. This is also a required argument.  </li>
+<li><code>--cython-cache-dir</code>: Specifies the directory where Cython compiled functions will be cached. </li>
+</ul>
+<h2 id="generate_base_operator">generate_base_operator</h2>
+<p>Generate unary operators representing various bases.</p>
+<h3 id="how-to-run_1">How to Run</h3>
+<p>To run the script, execute the following command with the desired parameters: </p>
+<pre><code class="language-bash">python generate_base_operator.py \
+    --config &lt;config_path&gt; \
+    --max_base &lt;max_base_value&gt; \
+    --operator-file &lt;operator_file_path&gt; \
+    --output-file &lt;output_file_path&gt; \
+    --cython-cache-dir &lt;cython_cache_directory&gt;
+</code></pre>
+<h4 id="command-line-arguments_3">Command-Line Arguments:</h4>
+<ul>
+<li><code>--config</code>: Specifies the path to the configuration file that defines the operator generation rules.</li>
+<li><code>--max_base</code>:Defines the maximum base value for numeral systems in the generated operators.</li>
+<li><code>--operator-file</code>: Indicates the path to the input file containing existing operators. </li>
+<li><code>--output-file</code>: Specifies the path where the generated operators will be saved. </li>
+<li><code>--cython-cache-dir</code>: Defines the directory where Cython compiled functions will be stored.   </li>
+</ul>
+<h2 id="op_func_transform">op_func_transform</h2>
+<p>Reverse transform a computation function back into an operator definition.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Opulse Team
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
