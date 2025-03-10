@@ -1041,7 +1041,7 @@
 
 
 <h1 id="yaml-configuration-for-operator-generation">YAML Configuration for Operator Generation</h1>
-<h2 id="1-logging-configuration">1. <strong>Logging Configuration</strong></h2>
+<h2 id="1-logging-configuration">1. Logging Configuration</h2>
 <pre><code class="language-yaml">logging:
   level: INFO  # INFO or DEBUG, WARNING, ERROR, CRITICAL
   log_dir: &quot;logs&quot;  # Log directory
@@ -1049,32 +1049,32 @@
   save_file: true  # Whether to save the logs to a file
 </code></pre>
 <ul>
-<li><strong>level</strong>: Defines the logging level. Options include <code>DEBUG</code>, <code>WARNING</code>, <code>ERROR</code>, and <code>CRITICAL</code>. It controls the verbosity of the logs. <code>DEBUG</code> is the most detailed.</li>
-<li><strong>log_dir</strong>: The directory where log files will be stored.</li>
-<li><strong>log_file</strong>: The name of the log file that will contain the logs.
+<li><code>level</code>: Defines the logging level. Options include <code>DEBUG</code>, <code>WARNING</code>, <code>ERROR</code>, and <code>CRITICAL</code>. It controls the verbosity of the logs. <code>DEBUG</code> is the most detailed.</li>
+<li><code>log_dir</code>: The directory where log files will be stored.</li>
+<li><code>log_file</code>: The name of the log file that will contain the logs.
 Sure! Here's the full explanation for the logging section, continuing from where you left off:</li>
-<li><strong>save_file</strong>: A flag to specify whether to save the logs to a file. If set to <code>true</code>, the logs will be written to the log file. If set to <code>false</code>, logging information may be displayed on the console or ignored, depending on other configurations.</li>
+<li><code>save_file</code>: A flag to specify whether to save the logs to a file. If set to <code>true</code>, the logs will be written to the log file. If set to <code>false</code>, logging information may be displayed on the console or ignored, depending on other configurations.</li>
 </ul>
 <hr />
-<h2 id="2-numeric-representation">2. <strong>Numeric Representation</strong></h2>
+<h2 id="2-numeric-representation">2. Numeric Representation</h2>
 <pre><code class="language-yaml">max_base: 16
 custom_digits: &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
 </code></pre>
 <ul>
-<li><strong>max_base</strong>: The maximum numeric base to be used for numerical operations. In this case, the base is set to 16, allowing hexadecimal operations.</li>
-<li><strong>custom_digits</strong>: A string defining the custom set of digits used for representing numbers in different bases. Here it supports bases up to 36, with digits 0-9 and letters A-Z.</li>
+<li><code>max_base</code>: The maximum numeric base to be used for numerical operations. In this case, the base is set to 16, allowing hexadecimal operations.</li>
+<li><code>custom_digits</code>: A string defining the custom set of digits used for representing numbers in different bases. Here it supports bases up to 36, with digits 0-9 and letters A-Z.</li>
 </ul>
 <hr />
-<h2 id="3-variable-atoms">3. <strong>Variable Atoms</strong></h2>
+<h2 id="3-variable-atoms">3. Variable Atoms</h2>
 <pre><code class="language-yaml">variable_atoms:
   - left_operand: &quot;a&quot;
   - right_operand: &quot;b&quot;
 </code></pre>
 <ul>
-<li><strong>variable_atoms</strong>: Defines the variables that will be used as operands in expressions. Here, "a" is used as the left operand and "b" as the right operand.</li>
+<li><code>variable_atoms</code>: Defines the variables that will be used as operands in expressions. Here, "a" is used as the left operand and "b" as the right operand.</li>
 </ul>
 <hr />
-<h2 id="4-other-symbol-atoms">4. <strong>Other Symbol Atoms</strong></h2>
+<h2 id="4-other-symbol-atoms">4. Other Symbol Atoms</h2>
 <pre><code class="language-yaml">other_symbols_atoms:
   left_parenthesis: &quot;(&quot; 
   right_parenthesis: &quot;)&quot;
@@ -1084,15 +1084,15 @@ custom_digits: &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
   neg_inf_symbol: &quot;-Inf&quot;  
 </code></pre>
 <ul>
-<li><strong>left_parenthesis</strong>: Defines the left parenthesis <code>(</code> used in expressions.</li>
-<li><strong>right_parenthesis</strong>: Defines the right parenthesis <code>)</code> used in expressions.</li>
-<li><strong>equals_sign</strong>: Defines the equal sign <code>=</code>, typically used for assignments or equality checks.</li>
-<li><strong>nan_symbol</strong>: Defines the symbol for "NaN" (Not a Number), indicating that the expression does not have a solution.</li>
-<li><strong>inf_symbol</strong>: Defines the symbol for positive infinity.</li>
-<li><strong>neg_inf_symbol</strong>: Defines the symbol for negative infinity.</li>
+<li><code>left_parenthesis</code>: Defines the left parenthesis <code>(</code> used in expressions.</li>
+<li><code>right_parenthesis</code>: Defines the right parenthesis <code>)</code> used in expressions.</li>
+<li><code>equals_sign</code>: Defines the equal sign <code>=</code>, typically used for assignments or equality checks.</li>
+<li><code>nan_symbol</code>: Defines the symbol for "NaN" (Not a Number), indicating that the expression does not have a solution.</li>
+<li><code>inf_symbol</code>: Defines the symbol for positive infinity.</li>
+<li><code>neg_inf_symbol</code>: Defines the symbol for negative infinity.</li>
 </ul>
 <hr />
-<h2 id="5-operator-generation">5. <strong>Operator Generation</strong></h2>
+<h2 id="5-operator-generation">5. Operator Generation</h2>
 <pre><code class="language-yaml">operator_symbol_min_len: 1
 operator_symbol_max_len: 3
 basic_operator_symbols: [&quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;%&quot;]
@@ -1107,16 +1107,16 @@ condition_probabilities:
   3: 0.1
 </code></pre>
 <ul>
-<li><strong>operator_symbol_min_len</strong>: Minimum length of an operator symbol. For example, the <code>+</code> symbol has a length of 1.</li>
-<li><strong>operator_symbol_max_len</strong>: Maximum length of an operator symbol. This will limit operator lengths to 3 characters.</li>
-<li><strong>basic_operator_symbols</strong>: A list of basic operators used for arithmetic calculations, such as addition (<code>+</code>), subtraction (<code>-</code>), multiplication (<code>*</code>), division (<code>/</code>), and modulus (<code>%</code>).</li>
-<li><strong>comparison_ops</strong>: A list of comparison operators for conditions, such as equality (<code>==</code>), greater than (<code>&gt;</code>), less than (<code>&lt;</code>), etc.</li>
-<li><strong>logical_connectors</strong>: A list of logical connectors used in expressions, such as <code>and</code> and <code>or</code>.</li>
-<li><strong>condition_numeric_range</strong>: Defines the numeric range used for conditions. The values are between <code>0</code> and <code>1000</code> (no negative numbers here).</li>
-<li><strong>condition_probabilities</strong>: Defines the probability distribution for different condition types. For example, there is a 70% chance that a condition will be of type 1, a 20% chance for type 2, and a 10% chance for type 3.</li>
+<li><code>operator_symbol_min_len</code>: Minimum length of an operator symbol. For example, the <code>+</code> symbol has a length of 1.</li>
+<li><code>operator_symbol_max_len</code>: Maximum length of an operator symbol. This will limit operator lengths to 3 characters.</li>
+<li><code>basic_operator_symbols</code>: A list of basic operators used for arithmetic calculations, such as addition (<code>+</code>), subtraction (<code>-</code>), multiplication (<code>*</code>), division (<code>/</code>), and modulus (<code>%</code>).</li>
+<li><code>comparison_ops</code>: A list of comparison operators for conditions, such as equality (<code>==</code>), greater than (<code>&gt;</code>), less than (<code>&lt;</code>), etc.</li>
+<li><code>logical_connectors</code>: A list of logical connectors used in expressions, such as <code>and</code> and <code>or</code>.</li>
+<li><code>condition_numeric_range</code>: Defines the numeric range used for conditions. The values are between <code>0</code> and <code>1000</code> (no negative numbers here).</li>
+<li><code>condition_probabilities</code>: Defines the probability distribution for different condition types. For example, there is a 70% chance that a condition will be of type 1, a 20% chance for type 2, and a 10% chance for type 3.</li>
 </ul>
 <hr />
-<h2 id="6-configuration-parameters-for-defining-strings-used-in-expressions-during-operator-definition-generation">6. <strong>Configuration Parameters for Defining Strings Used in Expressions During Operator Definition Generation</strong></h2>
+<h2 id="6-configuration-parameters-for-defining-strings-used-in-expressions-during-operator-definition-generation">6. Configuration Parameters for Defining Strings Used in Expressions During Operator Definition Generation</h2>
 <pre><code class="language-yaml">expr_variables:
   - a
   - b
@@ -1134,14 +1134,14 @@ expr_atom_type_weights:
   number: 0.2
 </code></pre>
 <ul>
-<li><strong>expr_variables</strong>: The variables used in expression generation.</li>
-<li><strong>expr_numeric_range</strong>: Defines the numeric range used in expressions. The values range from 0 to 1000.</li>
-<li><strong>expr_max_depth</strong>: The maximum depth of the generated expressions. For example, if set to 3, the expression will have a maximum of 3 levels of operations.</li>
-<li><strong>expr_type_weights</strong>: Defines the probability distribution for the types of expressions to be generated. For example, 70% of expressions will be binary, 20% unary prefix, 10% unary postfix, and 10% atoms.</li>
-<li><strong>expr_atom_type_weights</strong>: Defines the probability distribution for the types of atoms in the expressions. 80% will be variables and 20% will be numbers.</li>
+<li><code>expr_variables</code>: The variables used in expression generation.</li>
+<li><code>expr_numeric_range</code>: Defines the numeric range used in expressions. The values range from 0 to 1000.</li>
+<li><code>expr_max_depth</code>: The maximum depth of the generated expressions. For example, if set to 3, the expression will have a maximum of 3 levels of operations.</li>
+<li><code>expr_type_weights</code>: Defines the probability distribution for the types of expressions to be generated. For example, 70% of expressions will be binary, 20% unary prefix, 10% unary postfix, and 10% atoms.</li>
+<li><code>expr_atom_type_weights</code>: Defines the probability distribution for the types of atoms in the expressions. 80% will be variables and 20% will be numbers.</li>
 </ul>
 <hr />
-<h2 id="7-base-configuration-settings-not-applied-in-operator-generation">7. <strong>Base Configuration Settings Not Applied in Operator Generation</strong></h2>
+<h2 id="7-base-configuration-settings-not-applied-in-operator-generation">7. Base Configuration Settings Not Applied in Operator Generation</h2>
 <pre><code class="language-yaml">random_base:
   flag: false
   base: 10

@@ -850,21 +850,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="How to Use">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#command-line-arguments" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
       </ul>
@@ -888,30 +873,6 @@
       How to Use
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="How to Use">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#command-line-arguments_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bash-script-for-convenience" class="md-nav__link">
-    <span class="md-ellipsis">
-      Bash Script for Convenience
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -939,15 +900,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#command-line-arguments_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -969,21 +921,6 @@
       How to Run
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="How to Run">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#command-line-arguments_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1081,21 +1018,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="How to Use">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#command-line-arguments" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
       </ul>
@@ -1119,30 +1041,6 @@
       How to Use
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="How to Use">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#command-line-arguments_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bash-script-for-convenience" class="md-nav__link">
-    <span class="md-ellipsis">
-      Bash Script for Convenience
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1170,15 +1068,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#command-line-arguments_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1200,21 +1089,6 @@
       How to Run
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="How to Run">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#command-line-arguments_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      Command-Line Arguments:
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1264,7 +1138,7 @@
     --num &lt;num&gt; \
     --n_order &lt;n_order&gt;
 </code></pre>
-<h4 id="command-line-arguments">Command-Line Arguments:</h4>
+<p>Command-Line Arguments:</p>
 <ul>
 <li><code>--config</code>: The path to the configuration YAML file for operator generation.</li>
 <li><code>--initial-operators-path</code>: The path to the initial operator JSONL file.</li>
@@ -1293,7 +1167,7 @@
     --continue-mode &lt;continue_mode&gt;
 
 </code></pre>
-<h4 id="command-line-arguments_1">Command-Line Arguments:</h4>
+<p>Command-Line Arguments:</p>
 <ul>
 <li><code>--config</code>: The path to the configuration YAML file for operator generation.</li>
 <li><code>--initial-operators-path</code>: The path to the initial operator JSONL file.</li>
@@ -1306,7 +1180,7 @@
 <li><code>--increase-count</code>: This argument specifies the number of operators to add after the raise-order point is reached. The default value is <code>3</code>.</li>
 <li><code>--continue-mode</code>: This argument specifies whether to continue the generation process from the last checkpoint (<code>True</code>) or start a fresh generation process (<code>False</code>). The default value is <code>True</code>.</li>
 </ul>
-<h4 id="bash-script-for-convenience">Bash Script for Convenience</h4>
+<p>Bash Script for Convenience；</p>
 <p>To facilitate the execution process, a bash script is provided that can be run with modified parameters.</p>
 <pre><code class="language-bash">nohup bash run_generate_operator_multiprocess.sh &gt; output.log 2&gt;&amp;1 &amp;
 </code></pre>
@@ -1320,7 +1194,7 @@
     --output-operator-file &lt;output_operator_path&gt; \
     --cython-cache-dir &lt;cython_cache_directory&gt;
 </code></pre>
-<h4 id="command-line-arguments_2">Command-Line Arguments:</h4>
+<p>Command-Line Arguments:</p>
 <ul>
 <li><code>--config</code>: The path to the configuration YAML file for operator generation.</li>
 <li><code>--operator-file</code>: Defines the path to the input JSONL file containing the initial operator data. This argument is required.  </li>
@@ -1338,7 +1212,7 @@
     --output-file &lt;output_file_path&gt; \
     --cython-cache-dir &lt;cython_cache_directory&gt;
 </code></pre>
-<h4 id="command-line-arguments_3">Command-Line Arguments:</h4>
+<p>Command-Line Arguments:</p>
 <ul>
 <li><code>--config</code>: Specifies the path to the configuration file that defines the operator generation rules.</li>
 <li><code>--max_base</code>:Defines the maximum base value for numeral systems in the generated operators.</li>

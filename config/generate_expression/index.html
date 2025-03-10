@@ -987,7 +987,7 @@
 
 
 <h1 id="yaml-configuration-for-expression-generation">YAML Configuration for Expression Generation</h1>
-<h2 id="1-logging-configuration">1. <strong>Logging Configuration</strong></h2>
+<h2 id="1-logging-configuration">1. Logging Configuration</h2>
 <pre><code class="language-yaml">logging:
   level: INFO  # INFO or DEBUG, WARNING, ERROR, CRITICAL
   log_dir: &quot;logs&quot;  # Log directory
@@ -995,23 +995,23 @@
   save_file: true  # Whether to save the logs to a file
 </code></pre>
 <ul>
-<li><strong>level</strong>: Defines the logging level. Options include <code>DEBUG</code>, <code>WARNING</code>, <code>ERROR</code>, and <code>CRITICAL</code>. It controls the verbosity of the logs. <code>DEBUG</code> is the most detailed.</li>
-<li><strong>log_dir</strong>: The directory where log files will be stored.</li>
-<li><strong>log_file</strong>: The name of the log file that will contain the logs.
+<li><code>level</code>: Defines the logging level. Options include <code>DEBUG</code>, <code>WARNING</code>, <code>ERROR</code>, and <code>CRITICAL</code>. It controls the verbosity of the logs. <code>DEBUG</code> is the most detailed.</li>
+<li><code>log_dir</code>: The directory where log files will be stored.</li>
+<li><code>log_file</code>: The name of the log file that will contain the logs.
 Sure! Here's the full explanation for the logging section, continuing from where you left off:</li>
-<li><strong>save_file</strong>: A flag to specify whether to save the logs to a file. If set to <code>true</code>, the logs will be written to the log file. If set to <code>false</code>, logging information may be displayed on the console or ignored, depending on other configurations.</li>
+<li><code>save_file</code>: A flag to specify whether to save the logs to a file. If set to <code>true</code>, the logs will be written to the log file. If set to <code>false</code>, logging information may be displayed on the console or ignored, depending on other configurations.</li>
 </ul>
 <hr />
-<h2 id="2-numeric-representation">2. <strong>Numeric Representation</strong></h2>
+<h2 id="2-numeric-representation">2. Numeric Representation</h2>
 <pre><code class="language-yaml">max_base: 16
 custom_digits: &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
 </code></pre>
 <ul>
-<li><strong>max_base</strong>: The maximum numeric base to be used for numerical operations. In this case, the base is set to 16, allowing hexadecimal operations.</li>
-<li><strong>custom_digits</strong>: A string defining the custom set of digits used for representing numbers in different bases. Here it supports bases up to 36, with digits 0-9 and letters A-Z.</li>
+<li><code>max_base</code>: The maximum numeric base to be used for numerical operations. In this case, the base is set to 16, allowing hexadecimal operations.</li>
+<li><code>custom_digits</code>: A string defining the custom set of digits used for representing numbers in different bases. Here it supports bases up to 36, with digits 0-9 and letters A-Z.</li>
 </ul>
 <hr />
-<h2 id="3-other-symbol-atoms">3. <strong>Other Symbol Atoms</strong></h2>
+<h2 id="3-other-symbol-atoms">3. Other Symbol Atoms</h2>
 <pre><code class="language-yaml">other_symbols_atoms:
   left_parenthesis: &quot;(&quot; 
   right_parenthesis: &quot;)&quot;
@@ -1021,15 +1021,15 @@ custom_digits: &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
   neg_inf_symbol: &quot;-Inf&quot;  
 </code></pre>
 <ul>
-<li><strong>left_parenthesis</strong>: Defines the left parenthesis <code>(</code> used in expressions.</li>
-<li><strong>right_parenthesis</strong>: Defines the right parenthesis <code>)</code> used in expressions.</li>
-<li><strong>equals_sign</strong>: Defines the equal sign <code>=</code>, typically used for assignments or equality checks.</li>
-<li><strong>nan_symbol</strong>: Defines the symbol for "NaN" (Not a Number), indicating that the expression does not have a solution.</li>
-<li><strong>inf_symbol</strong>: Defines the symbol for positive infinity.</li>
-<li><strong>neg_inf_symbol</strong>: Defines the symbol for negative infinity.</li>
+<li><code>left_parenthesis</code>: Defines the left parenthesis <code>(</code> used in expressions.</li>
+<li><code>right_parenthesis</code>: Defines the right parenthesis <code>)</code> used in expressions.</li>
+<li><code>equals_sign</code>: Defines the equal sign <code>=</code>, typically used for assignments or equality checks.</li>
+<li><code>nan_symbol</code>: Defines the symbol for "NaN" (Not a Number), indicating that the expression does not have a solution.</li>
+<li><code>inf_symbol</code>: Defines the symbol for positive infinity.</li>
+<li><code>neg_inf_symbol</code>: Defines the symbol for negative infinity.</li>
 </ul>
 <hr />
-<h2 id="4-expression-generation">4. <strong>Expression Generation</strong></h2>
+<h2 id="4-expression-generation">4. Expression Generation</h2>
 <pre><code class="language-yaml">expr_variables:
   - a
   - b
@@ -1057,38 +1057,38 @@ longer_result_compute:
 </code></pre>
 <ul>
 <li>
-<p><strong>expr_variables</strong>: Defines the variables available for expression generation. In this case, only <code>a</code> and <code>b</code> will be used as operands.</p>
+<p><code>expr_variables</code>: Defines the variables available for expression generation. In this case, only <code>a</code> and <code>b</code> will be used as operands.</p>
 </li>
 <li>
-<p><strong>expr_numeric_range</strong>: Specifies the numeric range for the expressions, from <code>0</code> to <code>1000</code>. This applies to numeric atoms and intermediate values.</p>
+<p><code>expr_numeric_range</code>: Specifies the numeric range for the expressions, from <code>0</code> to <code>1000</code>. This applies to numeric atoms and intermediate values.</p>
 </li>
 <li>
-<p><strong>expr_max_depth</strong>: Sets the maximum depth of generated expressions. A depth of <code>3</code> allows up to three levels of nested operations.</p>
+<p><code>expr_max_depth</code>: Sets the maximum depth of generated expressions. A depth of <code>3</code> allows up to three levels of nested operations.</p>
 </li>
 <li>
-<p><strong>expr_type_weights</strong>: Specifies the probability distribution for expression types:</p>
+<p><code>expr_type_weights</code>: Specifies the probability distribution for expression types:</p>
 </li>
-<li><strong>binary (0.7)</strong>: 70% binary operations (e.g., <code>a + b</code>).</li>
-<li><strong>unary_prefix (0.2)</strong>: 20% unary prefix operations (e.g., <code>-a</code>).</li>
-<li><strong>unary_postfix (0.1)</strong>: 10% unary postfix operations (e.g., <code>a!</code>).</li>
+<li><code>binary (0.7)</code>: 70% binary operations (e.g., <code>a + b</code>).</li>
+<li><code>unary_prefix (0.2)</code>: 20% unary prefix operations (e.g., <code>-a</code>).</li>
+<li><code>unary_postfix (0.1)</code>: 10% unary postfix operations (e.g., <code>a!</code>).</li>
 <li>
-<p><strong>atoms (0)</strong>: No single variables or numbers generated as atoms.</p>
-</li>
-<li>
-<p><strong>expr_atom_type_weights</strong>: Defines the probability of atoms being variables or numbers:</p>
-</li>
-<li><strong>variable (0.3)</strong>: 30% variables (e.g., <code>a</code>, <code>b</code>).</li>
-<li>
-<p><strong>number (0.7)</strong>: 70% numbers (e.g., <code>1</code>, <code>42</code>, <code>1000</code>).</p>
+<p><code>atoms (0)</code>: No single variables or numbers generated as atoms.</p>
 </li>
 <li>
-<p><strong>random_base</strong>: Determines if random bases will be used for numbers. If enabled (<code>true</code>), numbers can be in different bases. Default is decimal (<code>base: 10</code>).</p>
+<p><code>expr_atom_type_weights</code>: Defines the probability of atoms being variables or numbers:</p>
+</li>
+<li><code>variable (0.3)</code>: 30% variables (e.g., <code>a</code>, <code>b</code>).</li>
+<li>
+<p><code>number (0.7)</code>: 70% numbers (e.g., <code>1</code>, <code>42</code>, <code>1000</code>).</p>
 </li>
 <li>
-<p><strong>result_base</strong>: Controls the base for the result of expressions. Default is decimal (<code>base: 10</code>), but it can be randomly selected if enabled.</p>
+<p><code>random_base</code>: Determines if random bases will be used for numbers. If enabled (<code>true</code>), numbers can be in different bases. Default is decimal (<code>base: 10</code>).</p>
 </li>
 <li>
-<p><strong>longer_result_compute</strong>: Enables more complex calculations for longer results. If enabled (<code>true</code>), results will be computed in the specified base (<code>base: 10</code>).</p>
+<p><code>result_base</code>: Controls the base for the result of expressions. Default is decimal (<code>base: 10</code>), but it can be randomly selected if enabled.</p>
+</li>
+<li>
+<p><code>longer_result_compute</code>: Enables more complex calculations for longer results. If enabled (<code>true</code>), results will be computed in the specified base (<code>base: 10</code>).</p>
 </li>
 </ul>
 
